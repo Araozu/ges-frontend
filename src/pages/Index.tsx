@@ -1,7 +1,9 @@
+import { Map } from "../components/Map";
+
 export function Index() {
     return (
         <div>
-            Index page
+            <Map />
         </div>
     );
 }
