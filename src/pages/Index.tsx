@@ -1,7 +1,7 @@
 import { Map } from "../components/Map";
 import { Provider } from "../connection/connection";
-import { createEffect, createSignal, For } from "solid-js";
-import { ProviderTitle } from "./Index/ProviderTitle";
+import { createSignal} from "solid-js";
+import { Providers } from "./Index/Providers";
 
 const path = "https://system-routes.herokuapp.com/route";
 
@@ -17,9 +17,7 @@ export function Index() {
 
     return (
         <div>
-            <For each={providers()} fallback={<div>Cargando...</div>}>
-                {(provider) => <ProviderTitle provider={provider} />}
-            </For>
+            <Providers providers={providers()} />
             <Map providers={providers()}/>
         </div>
     );
