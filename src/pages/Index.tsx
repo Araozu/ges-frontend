@@ -1,7 +1,7 @@
 import { Map } from "../components/Map";
 import { Provider } from "../connection/connection";
 import { createSignal } from "solid-js";
-import { Providers } from "./Index/Providers";
+import { Sidebar } from "./Index/Sidebar";
 import { StyleSheet, css } from "aphrodite/no-important";
 import Split from "split-grid";
 
@@ -17,6 +17,10 @@ const styles = StyleSheet.create({
         cursor: "col-resize",
         gridColumn: "2",
         backgroundColor: "var(--color)",
+    },
+    mapContainer: {
+        height: "100vh",
+        minWidth: "0",
     },
 });
 
@@ -45,7 +49,7 @@ export function Index() {
 
     return (
         <div className={css(styles.container)}>
-            <Providers providers={providers()}/>
+            <Sidebar providers={providers()}/>
             {sidebarGutter}
             <Map providers={providers()}/>
         </div>
