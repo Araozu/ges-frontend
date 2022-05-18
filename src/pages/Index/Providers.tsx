@@ -5,7 +5,7 @@ import { For } from "solid-js";
 const styles = StyleSheet.create({
     container: {
         display: "flex",
-        height: "10vh",
+        height: "100vh",
         alignItems: "center",
     },
     provider: {

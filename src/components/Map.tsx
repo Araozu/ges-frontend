@@ -7,7 +7,8 @@ const serverPath = "https://system-routes.herokuapp.com/route";
 
 const styles = StyleSheet.create({
     mapContainer: {
-        height: "90vh",
+        height: "100vh",
+        minWidth: "0",
     },
 });
 
