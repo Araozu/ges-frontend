@@ -11,10 +11,6 @@ const routes = [
 export default function() {
     const Routes = useRoutes(routes);
     return (
-        <>
-            <Router>
-                <Routes />
-            </Router>
-        </>
+        <Index />
     );
 }

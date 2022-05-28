@@ -2,7 +2,6 @@ import { createEffect, createSignal, onMount, untrack } from "solid-js";
 import { StyleSheet, css } from "aphrodite";
 import L from "leaflet";
 import { Point, Provider } from "../connection/connection";
-import { Colors } from "../values/Colors";
 import { ProviderManager } from "../values/ProviderManager";
 
 const serverPath = "https://system-routes.herokuapp.com/route";
