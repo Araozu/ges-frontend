@@ -1,6 +1,8 @@
 import {StyleSheet, css} from "aphrodite";
 import { Provider } from "../../connection/connection";
 import { For } from "solid-js";
+import { FilledCard } from "../../components/Cards";
+import { FilledTonalButton } from "../../components/Buttons";
 
 const styles = StyleSheet.create({
     container: {
@@ -26,10 +28,10 @@ const styles = StyleSheet.create({
 
 function ProviderTitle(props: {p: Provider}) {
     return (
-        <div>
-            <button className={css(styles.provider)}>
+        <div style={{margin: "0.25rem"}}>
+            <FilledTonalButton>
                 {props.p.definition}
-            </button>
+            </FilledTonalButton>
         </div>
     );
 }
@@ -37,12 +39,11 @@ function ProviderTitle(props: {p: Provider}) {
 export function Sidebar(props: {providers: Array<Provider>}) {
     return (
         <div className={css(styles.container)}>
-            <h1 className={css(styles.title)}>Proyecto GES</h1>
-            <div>
-                <For each={props.providers}>
-                    {(p) => <ProviderTitle p={p} />}
-                </For>
-            </div>
+            <h1 className={css(styles.title)}>Rutas GES</h1>
+
+            <For each={props.providers}>
+                {(p) => <ProviderTitle p={p} />}
+            </For>
         </div>
     );
 }

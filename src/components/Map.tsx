@@ -1,12 +1,21 @@
 import { createEffect, createSignal, onMount, untrack } from "solid-js";
-import { StyleSheet, css } from "aphrodite";
+import { StyleSheet, css } from "aphrodite/no-important";
 import L, { LatLng } from "leaflet";
 import { Point, Provider } from "../connection/connection";
 import { ProviderManager } from "../values/ProviderManager";
 
 const serverPath = "https://system-routes.herokuapp.com/route";
 
+
 const styles = StyleSheet.create({
+    container: {
+        // @ts-ignore
+        opacity: "var(--map-opacity)",
+        transition: "opacity 150ms",
+    },
+    hiddenContainer: {
+        opacity: 0,
+    },
     mapContainer: {
         height: "100vh",
         minWidth: "0",
@@ -24,14 +33,15 @@ function useLines(map: L.Map, manager: ProviderManager, providers: () => Provide
     });
 }
 
+const hiddenContainerClass = css(styles.container, styles.hiddenContainer);
+const normalContainerClass = css(styles.container);
 
 export function Map(props: { providers: Provider[] }) {
-    const container = <div className={css(styles.mapContainer)}/>;
-    // let map: L.Map | null = null;
+    const mapContainer = <div className={css(styles.mapContainer)}/>;
+    const [containerClass, setContainerClass] = createSignal(hiddenContainerClass);
 
     onMount(() => setTimeout(() => {
-        console.log(container);
-        const map = L.map(container as HTMLElement);
+        const map = L.map(mapContainer as HTMLElement);
         const manager = new ProviderManager(map);
 
         L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
@@ -48,16 +58,16 @@ export function Map(props: { providers: Provider[] }) {
         map.setView(new LatLng(-16.398895, -71.536737));
 
         setTimeout(() => {
-            console.log("defer");
             map.setView(new LatLng(-16.398895, -71.536737));
         }, 2000);
 
         useLines(map, manager, () => props.providers);
+        setContainerClass(normalContainerClass);
     }, 1000));
 
     return (
-        <div>
-            {container}
+        <div className={containerClass()}>
+            {mapContainer}
         </div>
     );
 }

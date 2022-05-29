@@ -2,6 +2,36 @@
     --bg-color: #202020;
     --color: #dedede;
     --border-color: rgba(222, 222, 222, 0.25);
+    --map-opacity: 0.75;
+
+    --elevation-level1: 0 2px 2px 0 rgba(0,0,0,0.14),0 3px 1px -2px rgba(0,0,0,0.12),0 1px 5px 0 rgba(0,0,0,0.2);
+
+    /* Material colors */
+    --primary: #50dea3;
+    --on-primary: #003823;
+    --primary-container: #005235;
+    --on-primary-container: #70fbbe;
+    --secondary: #b3ccbc;
+    --on-secondary: #20352a;
+    --secondary-container: #364b40;
+    --on-secondary-container: #cfe8d8;
+    --tertiary: #a5cdde;
+    --on-tertiary: #063543;
+    --tertiary-container: #244c5a;
+    --on-tertiary-container: #c1e9fb;
+    --error: #ffb4a9;
+    --on-error: #680003;
+    --error-container: #930006;
+    --on-error-container: #ffdad4;
+    --outline: #8a938c;
+    --background: #191c1a;
+    --on-background: #e1e3df;
+    --surface: #191c1a;
+    --on-surface: #e1e3df;
+    --surface-variant: #404943;
+    --on-surface-variant: #bfc9c1;
+    --inverse-surface: #e1e3df;
+    --inverse-on-surface: #191c1a;
 }
 
 @media (prefers-color-scheme: light) {
@@ -9,6 +39,34 @@
         --bg-color: #fffdfc;
         --color: #202020;
         --border-color: rgba(64, 64, 64, 0.25);
+        --map-opacity: 1;
+
+        /* Material colors */
+        --primary: #006c48;
+        --on-primary: #ffffff;
+        --primary-container: #70fbbe;
+        --on-primary-container: #002113;
+        --secondary: #4d6357;
+        --on-secondary: #ffffff;
+        --secondary-container: #cfe8d8;
+        --on-secondary-container: #0a1f16;
+        --tertiary: #3d6473;
+        --on-tertiary: #ffffff;
+        --tertiary-container: #c1e9fb;
+        --on-tertiary-container: #001f29;
+        --error: #ba1b1b;
+        --on-error: #ffffff;
+        --error-container: #ffdad4;
+        --on-error-container: #410001;
+        --outline: #707973;
+        --background: #fbfdf8;
+        --on-background: #191c1a;
+        --surface: #fbfdf8;
+        --on-surface: #191c1a;
+        --surface-variant: #dce5dd;
+        --on-surface-variant: #404943;
+        --inverse-surface: #2d312e;
+        --inverse-on-surface: #eff1ed;
     }
 }
 

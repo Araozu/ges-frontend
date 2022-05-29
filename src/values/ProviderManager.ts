@@ -54,7 +54,6 @@ class Provider {
     }
 
     private async fetchPath() {
-        console.log("Fetching path for ", this.id);
         const pathsRaw = await fetch(`${serverPath}/graphics?companyId=${this.id}`);
         const points = await pathsRaw.json() as Array<Point>;
         this.path = points.map((point): L.LatLngExpression => [point.latitude, point.longitude]);
