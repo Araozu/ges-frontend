@@ -1,11 +1,8 @@
-import { createEffect, createSignal, onMount, untrack } from "solid-js";
+import { createEffect, createSignal, onMount } from "solid-js";
 import { StyleSheet, css } from "aphrodite/no-important";
 import L, { LatLng } from "leaflet";
-import { Point, Provider } from "../connection/connection";
-import { ProviderManager } from "../values/ProviderManager";
-
-const serverPath = "https://system-routes.herokuapp.com/route";
-
+import { ProviderObject } from "../connection/connection";
+import { ProviderManager, ProviderManagerBuilder } from "../values/ProviderManager";
 
 const styles = StyleSheet.create({
     container: {
@@ -23,9 +20,7 @@ const styles = StyleSheet.create({
 });
 
 
-function useLines(map: L.Map, manager: ProviderManager, providers: () => Provider[]) {
-    const lines: Array<L.Polyline> = [];
-
+function useLines(map: L.Map, manager: ProviderManager, providers: () => ProviderObject[]) {
     createEffect(() => {
         const p = providers();
 
@@ -36,13 +31,13 @@ function useLines(map: L.Map, manager: ProviderManager, providers: () => Provide
 const hiddenContainerClass = css(styles.container, styles.hiddenContainer);
 const normalContainerClass = css(styles.container);
 
-export function Map(props: { providers: Provider[] }) {
+export function Map(props: { providers: Array<ProviderObject>, builder: ProviderManagerBuilder }) {
     const mapContainer = <div className={css(styles.mapContainer)}/>;
     const [containerClass, setContainerClass] = createSignal(hiddenContainerClass);
 
     onMount(() => setTimeout(() => {
         const map = L.map(mapContainer as HTMLElement);
-        const manager = new ProviderManager(map);
+        const manager = props.builder.setMap(map).build();
 
         L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
             attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",

@@ -35,12 +35,18 @@ function usePressedState(): [() => boolean, () => void] {
 
 const filledTonalButtonClass = css(styles.button, styles.filledTonalButton);
 const filledTonalButtonPressedClass = css(styles.button, styles.filledTonalButton, styles.filledTonalButtonPressed);
-export function FilledTonalButton(props: {children: JSX.Element}) {
+
+export function FilledTonalButton(props: { onClick?: () => void, children: JSX.Element }) {
     const [isPressed, press] = usePressedState();
     const buttonClass = createMemo(() => (isPressed() ? filledTonalButtonPressedClass : filledTonalButtonClass));
 
+    const onClickFn = () => {
+        press();
+        props.onClick?.();
+    };
+
     return (
-        <button class={buttonClass()} onClick={press}>
+        <button class={buttonClass()} onClick={onClickFn}>
             {props.children}
         </button>
     );

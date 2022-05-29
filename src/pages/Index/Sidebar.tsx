@@ -1,8 +1,9 @@
 import {StyleSheet, css} from "aphrodite";
-import { Provider } from "../../connection/connection";
-import { For } from "solid-js";
+import { ProviderObject } from "../../connection/connection";
+import { createSignal, For, JSX, Show } from "solid-js";
 import { FilledCard } from "../../components/Cards";
 import { FilledTonalButton } from "../../components/Buttons";
+import { ProviderManager, ProviderManagerBuilder } from "../../values/ProviderManager";
 
 const styles = StyleSheet.create({
     container: {
@@ -26,24 +27,38 @@ const styles = StyleSheet.create({
     },
 });
 
-function ProviderTitle(props: {p: Provider}) {
+function ProviderTitle(props: {p: ProviderObject, manager: ProviderManager}) {
+    const provider = props.manager.getById(props.p.id)!;
+
     return (
         <div style={{margin: "0.25rem"}}>
-            <FilledTonalButton>
+            <FilledTonalButton onClick={() => provider.toggleHide()}>
                 {props.p.definition}
             </FilledTonalButton>
         </div>
     );
 }
 
-export function Sidebar(props: {providers: Array<Provider>}) {
+export function Sidebar(props: {providers: Array<ProviderObject>, builder: ProviderManagerBuilder}) {
+    const [providersElem, setProvidersElem] = createSignal<JSX.Element>(<></>);
+
+    (async() => {
+        const providerManager = await props.builder.getInstance();
+
+        const providers = (
+            <For each={props.providers}>
+                {(p) => <ProviderTitle p={p} manager={providerManager} />}
+            </For>
+        );
+
+        setProvidersElem(providers);
+    })();
+
     return (
         <div className={css(styles.container)}>
             <h1 className={css(styles.title)}>Rutas GES</h1>
 
-            <For each={props.providers}>
-                {(p) => <ProviderTitle p={p} />}
-            </For>
+            {providersElem()}
         </div>
     );
 }

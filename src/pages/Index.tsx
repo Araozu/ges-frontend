@@ -1,9 +1,10 @@
 import { Map } from "../components/Map";
-import { Provider } from "../connection/connection";
+import { ProviderObject } from "../connection/connection";
 import { createSignal } from "solid-js";
 import { Sidebar } from "./Index/Sidebar";
 import { StyleSheet, css } from "aphrodite/no-important";
 import Split from "split-grid";
+import { ProviderManager, ProviderManagerBuilder } from "../values/ProviderManager";
 
 const path = "https://system-routes.herokuapp.com/route";
 
@@ -25,7 +26,8 @@ const styles = StyleSheet.create({
 });
 
 export function Index() {
-    const [providers, setProviders] = createSignal<Provider[]>([]);
+    const [providers, setProviders] = createSignal<ProviderObject[]>([]);
+    const providerManagerBuilder = new ProviderManagerBuilder();
 
     const sidebarGutter = <div className={css(styles.gutter)}/>;
 
@@ -43,15 +45,15 @@ export function Index() {
     fetch(`${path}/`)
         .then((res) => res.json())
         .then((obj) => {
-            const providers = obj as Provider[];
+            const providers = obj as ProviderObject[];
             setProviders(providers);
         });
 
     return (
         <div className={css(styles.container)}>
-            <Sidebar providers={providers()}/>
+            <Sidebar providers={providers()} builder={providerManagerBuilder}/>
             {sidebarGutter}
-            <Map providers={providers()}/>
+            <Map providers={providers()} builder={providerManagerBuilder}/>
         </div>
     );
 }

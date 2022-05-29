@@ -34,6 +34,11 @@ class Provider {
      * @private
      */
     private polyline: L.Polyline | null = null;
+    /**
+     * Whether this provider's path is hidden in the map
+     * @private
+     */
+    private hidden = false;
 
     constructor(map: L.Map, param: { id: number, definition: string }) {
         this.id = param.id;
@@ -67,13 +72,22 @@ class Provider {
     /**
      * Hides this line from the map
      */
-    public hide() {
-        console.log("Hide path for", this.id);
+    public toggleHide() {
+        console.log("Toggle hide path for", this.id);
         if (this.polyline === null) {
             console.log("Polyline for", this.id, "is not initialized");
             return;
         }
-        this.polyline.options.opacity = 0;
+        if (this.hidden) {
+            this.polyline.setStyle({
+                opacity: 1,
+            });
+        } else {
+            this.polyline.setStyle({
+                opacity: 0,
+            });
+        }
+        this.hidden = !this.hidden;
     }
 
     /**
@@ -88,6 +102,54 @@ type RawProviderArr = Array<{
     id: number,
     definition: string,
 }>
+
+export class ProviderManagerBuilder {
+    private providerManagerInstance: ProviderManager | null = null;
+    protected hasBeenInstantiated = false;
+
+    /**
+     * Sets the map to be used in the ProviderManager.
+     * @param map
+     */
+    setMap(map: L.Map): this {
+        this.providerManagerInstance = new ProviderManager(map);
+        this.hasBeenInstantiated = true;
+        return this;
+    }
+
+    /**
+     * Builds the ProviderManager
+     */
+    build(): ProviderManager {
+        if (!this.hasBeenInstantiated) {
+            throw new Error("Tried to build a ProviderManager without setting the map.");
+        }
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return this.providerManagerInstance!;
+    }
+
+    private waitForInstance() {
+        return new Promise<void>((resolve) => {
+            let interval = 0;
+            interval = setInterval(() => {
+                if (this.hasBeenInstantiated) {
+                    clearInterval(interval);
+                    resolve();
+                }
+            }, 250);
+        });
+    }
+
+    /**
+     * Tries to get the ProviderManager every 250ms. Another component should
+     * call `setMap()` and `build()` beforehand.
+     */
+    async getInstance(): Promise<ProviderManager> {
+        await this.waitForInstance();
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return this.providerManagerInstance!;
+    }
+}
 
 export class ProviderManager {
     private readonly providers: Map<number, Provider> = new Map();
@@ -111,5 +173,9 @@ export class ProviderManager {
             const newProvider = new Provider(this.map, provider);
             this.providers.set(provider.id, newProvider);
         }
+    }
+
+    public getById(id: number): Provider | null {
+        return this.providers.get(id) ?? null;
     }
 }

@@ -5,7 +5,7 @@ export interface Point {
 }
 
 // A provider of public transportation
-export interface Provider {
+export interface ProviderObject {
     id: number,
     definition: string,
 }
