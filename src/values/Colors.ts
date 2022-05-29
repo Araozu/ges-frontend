@@ -9,12 +9,6 @@ const colors: Readonly<Array<string>> = Object.freeze([
     "#2196F3",
     "#00BCD4",
     "#009688",
-    "#4CAF50",
-    "#CDDC39",
-    "#FFEB3B",
-    "#FFC107",
-    "#FF9800",
-    "#FF5722",
 ]);
 
 const colorsSize = colors.length;

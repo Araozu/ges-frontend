@@ -61,7 +61,6 @@ class Provider {
     }
 
     private draw() {
-        console.log("Drawing path for", this.id);
         this.polyline = L.polyline(this.path, {color: this.color})
             .addTo(this.map);
     }
