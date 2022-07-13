@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
         gridRow: "1/-1",
         cursor: "col-resize",
         gridColumn: "2",
-        backgroundColor: "var(--color)",
+        backgroundColor: "#ece9e5",
     },
     mapContainer: {
         height: "100vh",

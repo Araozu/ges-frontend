@@ -88,3 +88,10 @@ body {
     color: var(--color);
 }
 
+hr {
+    margin: 0;
+}
+
+.v {
+    color: #d2690e;
+}
