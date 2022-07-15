@@ -39,7 +39,7 @@ export function Index() {
                 track: 1,
             },
         ],
-        minSize: 500,
+
     });
 
     fetch(`${path}/`)
