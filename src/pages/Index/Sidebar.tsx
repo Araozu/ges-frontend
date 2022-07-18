@@ -1,7 +1,6 @@
-import {StyleSheet, css} from "aphrodite";
+import { StyleSheet, css } from "aphrodite";
 import { ProviderObject } from "../../connection/connection";
-import { createSignal, For, JSX, Show } from "solid-js";
-import { FilledCard } from "../../components/Cards";
+import { createSignal, For, JSX, Show, untrack } from "solid-js";
 import { FilledTonalButton } from "../../components/Buttons";
 import { ProviderManager, ProviderManagerBuilder } from "../../values/ProviderManager";
 
@@ -72,7 +71,16 @@ const styles = StyleSheet.create({
     },
 });
 
-function ProviderTitle(props: {p: ProviderObject, manager: ProviderManager}) {
+const bar = StyleSheet.create({
+    button: {
+        backgroundColor: "transparent",
+        border: "none",
+        cursor: "pointer",
+        padding: 0,
+    },
+});
+
+function ProviderTitle(props: { p: ProviderObject, manager: ProviderManager }) {
     const provider = props.manager.getById(props.p.id)!;
 
     return (
@@ -97,7 +105,7 @@ function Item() {
                     </span>
                 </div>
                 <div>
-                6 DE DICIEMBRE
+                    6 DE DICIEMBRE
                     <br/>
                     <a href="" style={{"font-size": "0.8rem"}}>Mas información</a>
                 </div>
@@ -107,7 +115,66 @@ function Item() {
     );
 }
 
-export function Sidebar(props: {providers: Array<ProviderObject>, builder: ProviderManagerBuilder}) {
+function Bar(props: {isSidebarCollapsed: boolean, toggleSidebar: () => void}) {
+    const toggleIconName = () => (props.isSidebarCollapsed ? "keyboard_double_arrow_right" : "keyboard_double_arrow_left");
+
+    const buttonClickFn = () => {
+        props.toggleSidebar();
+    };
+
+    return (
+        <div className={css(styles.bar)}>
+            <span className={`${css(styles.bicon)} material-icons`}>
+                    account_circle
+            </span>
+            <br/>
+            <br/>
+            <div style={{"background-color": "#06384B"}}>
+                <button className={css(bar.button)}>
+                    <span className={`${css(styles.bicon)} material-icons`}>
+                        moving
+                    </span>
+                    <br/>
+                    <span className={css(styles.blabel)}>RUTAS</span>
+                </button>
+            </div>
+            <div>
+                <button className={css(bar.button)}>
+                    <span className={`${css(styles.bicon)} material-icons`}>
+                        airline_stops
+                    </span>
+                    <br/>
+                    <span className={css(styles.blabel)}>DESTINO</span>
+                </button>
+            </div>
+            <div>
+                <button className={css(bar.button)}>
+                    <span className={`${css(styles.bicon)} material-icons`}>
+                        location_searching
+                    </span>
+                    <br/>
+                    <span className={css(styles.blabel)}>LUGARES</span>
+                </button>
+            </div>
+
+            <div className={css(styles.bottom1)}>
+                <button className={css(bar.button)} onClick={buttonClickFn}>
+                    <span className={`${css(styles.bicon)} material-icons`}>
+                        {toggleIconName()}
+                    </span>
+                </button>
+            </div>
+        </div>
+    );
+}
+
+type SidebarProps = {
+    providers: Array<ProviderObject>,
+    builder: ProviderManagerBuilder,
+    isSidebarCollapsed: boolean,
+    toggleSidebarFn: () => void,
+}
+export function Sidebar(props: SidebarProps) {
     const [providersElem, setProvidersElem] = createSignal<JSX.Element>(<></>);
 
     (async() => {
@@ -115,7 +182,7 @@ export function Sidebar(props: {providers: Array<ProviderObject>, builder: Provi
 
         const providers = (
             <For each={props.providers}>
-                {(p) => <ProviderTitle p={p} manager={providerManager} />}
+                {(p) => <ProviderTitle p={p} manager={providerManager}/>}
             </For>
         );
 
@@ -124,60 +191,29 @@ export function Sidebar(props: {providers: Array<ProviderObject>, builder: Provi
 
     return (
         <div className={css(styles.container)}>
-            <div style={{position: "relative"}}>
-                <h1 className={css(styles.title)}>ÉL GUIA</h1>
-                <div className={css(styles.t2)}>
-                    <div style={{"text-align": "right"}}>RUTA</div>
-                    <span></span>
-                    <div style={{"text-align": "left"}}>EMPRESA</div>
-                </div>
+            <Show when={!props.isSidebarCollapsed}>
+                <div style={{position: "relative"}}>
+                    <h1 className={css(styles.title)}>ÉL GUIA</h1>
+                    <div className={css(styles.t2)}>
+                        <div style={{"text-align": "right"}}>RUTA</div>
+                        <span></span>
+                        <div style={{"text-align": "left"}}>EMPRESA</div>
+                    </div>
 
-                <Item />
-                <Item />
-                <Item />
-                <Item />
-                <Item />
-                <Item />
-                <Item />
-                <Item />
-                <Item />
+                    <Item/>
+                    <Item/>
+                    <Item/>
+                    <Item/>
+                    <Item/>
+                    <Item/>
+                    <Item/>
+                    <Item/>
+                    <Item/>
 
-                <div className={css(styles.bottom1)}></div>
-            </div>
-            <div className={css(styles.bar)}>
-                <span className={`${css(styles.bicon)} material-icons`}>
-                    account_circle
-                </span>
-                <br/>
-                <br/>
-                <div style={{"background-color": "#06384B"}}>
-                    <span className={`${css(styles.bicon)} material-icons`}>
-                        moving
-                    </span>
-                    <br/>
-                    <span className={css(styles.blabel)}>RUTAS</span>
+                    <div className={css(styles.bottom1)}></div>
                 </div>
-                <div>
-                    <span className={`${css(styles.bicon)} material-icons`}>
-                        airline_stops
-                    </span>
-                    <br/>
-                    <span className={css(styles.blabel)}>DESTINO</span>
-                </div>
-                <div>
-                    <span className={`${css(styles.bicon)} material-icons`}>
-                        location_searching
-                    </span>
-                    <br/>
-                    <span className={css(styles.blabel)}>LUGARES</span>
-                </div>
-
-                <div className={css(styles.bottom1)}>
-                    <span className={`${css(styles.bicon)} material-icons`}>
-                        keyboard_double_arrow_left
-                    </span>
-                </div>
-            </div>
+            </Show>
+            <Bar isSidebarCollapsed={props.isSidebarCollapsed} toggleSidebar={props.toggleSidebarFn}/>
         </div>
     );
 }

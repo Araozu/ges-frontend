@@ -11,7 +11,7 @@ const path = "https://system-routes.herokuapp.com/route";
 const styles = StyleSheet.create({
     container: {
         display: "grid",
-        gridTemplateColumns: "1.5fr 5px 3fr",
+        // gridTemplateColumns: "24rem auto",
     },
     gutter: {
         gridRow: "1/-1",
@@ -29,18 +29,12 @@ export function Index() {
     const [providers, setProviders] = createSignal<ProviderObject[]>([]);
     const providerManagerBuilder = new ProviderManagerBuilder();
 
-    const sidebarGutter = <div className={css(styles.gutter)}/>;
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = createSignal(false);
+    const sidebarColumnSize = () => (isSidebarCollapsed() ? "3rem" : "24rem");
 
-    Split({
-        dragInterval: 10,
-        columnGutters: [
-            {
-                element: sidebarGutter as unknown as HTMLElement,
-                track: 1,
-            },
-        ],
-
-    });
+    const toggleSidebar = () => {
+        setIsSidebarCollapsed((x) => !x);
+    };
 
     fetch(`${path}/`)
         .then((res) => res.json())
@@ -50,10 +44,19 @@ export function Index() {
         });
 
     return (
-        <div className={css(styles.container)}>
-            <Sidebar providers={providers()} builder={providerManagerBuilder}/>
-            {sidebarGutter}
+        <div className={css(styles.container)} style={{"grid-template-columns": `${sidebarColumnSize()} auto`}}>
+            <Sidebar
+                providers={providers()}
+                builder={providerManagerBuilder}
+                isSidebarCollapsed={isSidebarCollapsed()}
+                toggleSidebarFn={toggleSidebar}
+            />
+            <div>
+                <h1>Mapa aqui...</h1>
+            </div>
+            {/*
             <Map providers={providers()} builder={providerManagerBuilder}/>
+            */}
         </div>
     );
 }
