@@ -1,8 +1,9 @@
 import { StyleSheet, css } from "aphrodite";
 import { ProviderObject } from "../../connection/connection";
-import { createSignal, For, JSX, Show, untrack } from "solid-js";
+import { createSignal, For, JSX, Show } from "solid-js";
 import { FilledTonalButton } from "../../components/Buttons";
 import { ProviderManager, ProviderManagerBuilder } from "../../values/ProviderManager";
+import { Empresa } from "./SidebarEmpresa";
 
 const styles = StyleSheet.create({
     container: {
@@ -38,7 +39,7 @@ const styles = StyleSheet.create({
     t2: {
         display: "grid",
         gridTemplateColumns: "40% 20% 40%",
-        backgroundColor: "#a8a8a8",
+        backgroundColor: "var(--border-color)",
         padding: "0.5rem",
         textAlign: "center",
     },
@@ -53,7 +54,7 @@ const styles = StyleSheet.create({
         marginRight: "2rem",
     },
     bicon: {
-        fontSize: "60px",
+        fontSize: "2.5rem",
         verticalAlign: "middle",
         color: "white",
     },
@@ -92,30 +93,8 @@ function ProviderTitle(props: { p: ProviderObject, manager: ProviderManager }) {
     );
 }
 
-function Item() {
-    return (
-        <>
-            <div className={css(styles.item)}>
-                <div style={{"text-align": "center"}}>
-                    <span className={`${css(styles.micon)} material-icons`}>
-                            toggle_on
-                    </span>
-                    <span>
-                            A 007
-                    </span>
-                </div>
-                <div>
-                    6 DE DICIEMBRE
-                    <br/>
-                    <a href="" style={{"font-size": "0.8rem"}}>Mas información</a>
-                </div>
-            </div>
-            <hr/>
-        </>
-    );
-}
 
-function Bar(props: {isSidebarCollapsed: boolean, toggleSidebar: () => void}) {
+function Bar(props: { isSidebarCollapsed: boolean, toggleSidebar: () => void }) {
     const toggleIconName = () => (props.isSidebarCollapsed ? "keyboard_double_arrow_right" : "keyboard_double_arrow_left");
 
     const buttonClickFn = () => {
@@ -168,12 +147,25 @@ function Bar(props: {isSidebarCollapsed: boolean, toggleSidebar: () => void}) {
     );
 }
 
+const mockEmpresa: Empresa = {
+    nombre: "6 de diciembre",
+    rutas: [
+        {
+            codigo: "A 007",
+        },
+        {
+            codigo: "A 008",
+        },
+    ],
+};
+
 type SidebarProps = {
     providers: Array<ProviderObject>,
     builder: ProviderManagerBuilder,
     isSidebarCollapsed: boolean,
     toggleSidebarFn: () => void,
 }
+
 export function Sidebar(props: SidebarProps) {
     const [providersElem, setProvidersElem] = createSignal<JSX.Element>(<></>);
 
@@ -194,21 +186,15 @@ export function Sidebar(props: SidebarProps) {
             <Show when={!props.isSidebarCollapsed}>
                 <div style={{position: "relative"}}>
                     <h1 className={css(styles.title)}>ÉL GUIA</h1>
+                    {/*
                     <div className={css(styles.t2)}>
                         <div style={{"text-align": "right"}}>RUTA</div>
                         <span></span>
                         <div style={{"text-align": "left"}}>EMPRESA</div>
                     </div>
+                    */}
 
-                    <Item/>
-                    <Item/>
-                    <Item/>
-                    <Item/>
-                    <Item/>
-                    <Item/>
-                    <Item/>
-                    <Item/>
-                    <Item/>
+                    <Empresa empresa={mockEmpresa}/>
 
                     <div className={css(styles.bottom1)}></div>
                 </div>
