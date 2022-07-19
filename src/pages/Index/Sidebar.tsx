@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     bar: {
         width: "100%",
         height: "100vh",
-        backgroundColor: "#ec962b",
+        backgroundColor: "#FFA726",
         textAlign: "center",
         position: "relative",
     },
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     bottom1: {
         width: "100%",
         height: "2.5rem",
-        backgroundColor: "#d2690e",
+        backgroundColor: "#F57C00",
         position: "absolute",
         bottom: "0",
     },
@@ -104,7 +104,7 @@ function Bar(props: { isSidebarCollapsed: boolean, toggleSidebar: () => void }) 
     return (
         <div className={css(styles.bar)}>
             <span className={`${css(styles.bicon)} material-icons`}>
-                    account_circle
+                account_circle
             </span>
             <br/>
             <br/>

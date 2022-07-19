@@ -1,5 +1,5 @@
 import { css, StyleSheet } from "aphrodite";
-import { For } from "solid-js";
+import { createSignal, For, Show } from "solid-js";
 
 const styles = StyleSheet.create({
     empresaTopBar: {
@@ -44,7 +44,9 @@ export type Empresa = {
     rutas: Array<Ruta>,
 }
 
-function Ruta(props: {ruta: Ruta}) {
+function Ruta(props: { ruta: Ruta }) {
+
+
     return (
         <>
             <div className={css(styles.ruta, styles.rutaBar)}>
@@ -68,6 +70,20 @@ function Ruta(props: {ruta: Ruta}) {
 }
 
 export function Empresa(props: { empresa: Empresa }) {
+    const [active, setActive] = createSignal(false);
+    const toggleStyle = () => {
+        if (active()) {
+            return {"color": "var(--main-color)"};
+        } else {
+            return {};
+        }
+    };
+    const toggleIconName = () => (active() ? "toggle_on" : "toggle_off");
+
+    const toggleActive = () => {
+        setActive((x) => !x);
+    };
+
     return (
         <div>
             <div className={css(styles.empresaLabel)}>
@@ -75,8 +91,12 @@ export function Empresa(props: { empresa: Empresa }) {
             </div>
             <div className={css(styles.empresaTopBar)}>
                 <div style={{"text-align": "center"}}>
-                    <span className={`${css(styles.micon)} material-icons`}>
-                        toggle_off
+                    <span
+                        className={`${css(styles.micon)} material-icons`}
+                        onClick={toggleActive}
+                        style={toggleStyle()}
+                    >
+                        {toggleIconName()}
                     </span>
                 </div>
                 <div className={css(styles.empresaNombre)}>
@@ -84,14 +104,16 @@ export function Empresa(props: { empresa: Empresa }) {
                 </div>
             </div>
 
-            <div className={css(styles.rutas)}>
-                <div className={css(styles.empresaLabel)}>
-                    Rutas
+            <Show when={active()}>
+                <div className={css(styles.rutas)}>
+                    <div className={css(styles.empresaLabel)}>
+                        Rutas
+                    </div>
+                    <For each={props.empresa.rutas}>
+                        {(ruta) => <Ruta ruta={ruta}/>}
+                    </For>
                 </div>
-                <For each={props.empresa.rutas}>
-                    {(ruta) => <Ruta ruta={ruta} />}
-                </For>
-            </div>
+            </Show>
         </div>
     );
 }

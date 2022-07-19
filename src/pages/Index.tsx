@@ -3,7 +3,6 @@ import { ProviderObject } from "../connection/connection";
 import { createSignal } from "solid-js";
 import { Sidebar } from "./Index/Sidebar";
 import { StyleSheet, css } from "aphrodite/no-important";
-import Split from "split-grid";
 import { ProviderManager, ProviderManagerBuilder } from "../values/ProviderManager";
 
 const path = "https://system-routes.herokuapp.com/route";
