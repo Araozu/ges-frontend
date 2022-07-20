@@ -1,11 +1,10 @@
 import { Map } from "../components/Map";
-import { ProviderObject } from "../connection/connection";
 import { createSignal } from "solid-js";
 import { Sidebar } from "./Index/Sidebar";
 import { StyleSheet, css } from "aphrodite/no-important";
-import { ProviderManager, ProviderManagerBuilder } from "../values/ProviderManager";
+import { Company, Company_, ProviderManager, ProviderManagerBuilder } from "../values/ProviderManager";
 
-const path = "https://system-routes.herokuapp.com/route";
+const serverPath = "https://system-routes.herokuapp.com";
 
 const styles = StyleSheet.create({
     container: {
@@ -25,7 +24,7 @@ const styles = StyleSheet.create({
 });
 
 export function Index() {
-    const [providers, setProviders] = createSignal<ProviderObject[]>([]);
+    const [providers, setProviders] = createSignal<Company_[]>([]);
     const providerManagerBuilder = new ProviderManagerBuilder();
 
     const [isSidebarCollapsed, setIsSidebarCollapsed] = createSignal(false);
@@ -35,27 +34,32 @@ export function Index() {
         setIsSidebarCollapsed((x) => !x);
     };
 
-    fetch(`${path}/`)
+    fetch(`${serverPath}/company/`)
         .then((res) => res.json())
-        .then((obj) => {
-            const providers = obj as ProviderObject[];
+        .then(async(obj) => {
+            // Edge case
+            if (obj.content === "Error") return;
+
+            console.log("Data:",obj);
+            const providers = obj as Company_[];
+
             setProviders(providers);
+        })
+        .catch((err) => {
+            console.log("Error fetching.", err);
         });
 
     return (
         <div className={css(styles.container)} style={{"grid-template-columns": `${sidebarColumnSize()} auto`}}>
             <Sidebar
-                providers={providers()}
+                companies={providers()}
                 builder={providerManagerBuilder}
                 isSidebarCollapsed={isSidebarCollapsed()}
                 toggleSidebarFn={toggleSidebar}
             />
-            <div>
-                <h1>Mapa aqui...</h1>
-            </div>
-            {/*
+
             <Map providers={providers()} builder={providerManagerBuilder}/>
-            */}
+
         </div>
     );
 }

@@ -1,8 +1,7 @@
 import { StyleSheet, css } from "aphrodite";
-import { ProviderObject } from "../../connection/connection";
-import { createSignal, For, JSX, Show } from "solid-js";
+import { createSignal, For, JSX, Show, createMemo, createEffect } from "solid-js";
 import { FilledTonalButton } from "../../components/Buttons";
-import { ProviderManager, ProviderManagerBuilder } from "../../values/ProviderManager";
+import { Company, Company_, ProviderManager, ProviderManagerBuilder } from "../../values/ProviderManager";
 import { Empresa } from "./SidebarEmpresa";
 
 const styles = StyleSheet.create({
@@ -81,19 +80,6 @@ const bar = StyleSheet.create({
     },
 });
 
-function ProviderTitle(props: { p: ProviderObject, manager: ProviderManager }) {
-    const provider = props.manager.getById(props.p.id)!;
-
-    return (
-        <div style={{margin: "0.25rem"}}>
-            <FilledTonalButton onClick={() => provider.toggleHide()}>
-                {props.p.definition}
-            </FilledTonalButton>
-        </div>
-    );
-}
-
-
 function Bar(props: { isSidebarCollapsed: boolean, toggleSidebar: () => void }) {
     const toggleIconName = () => (props.isSidebarCollapsed ? "keyboard_double_arrow_right" : "keyboard_double_arrow_left");
 
@@ -147,34 +133,28 @@ function Bar(props: { isSidebarCollapsed: boolean, toggleSidebar: () => void }) 
     );
 }
 
-const mockEmpresa: Empresa = {
-    nombre: "6 de diciembre",
-    rutas: [
-        {
-            codigo: "A 007",
-        },
-        {
-            codigo: "A 008",
-        },
-    ],
-};
-
 type SidebarProps = {
-    providers: Array<ProviderObject>,
+    companies: Array<Company_>,
     builder: ProviderManagerBuilder,
     isSidebarCollapsed: boolean,
     toggleSidebarFn: () => void,
 }
-
 export function Sidebar(props: SidebarProps) {
     const [providersElem, setProvidersElem] = createSignal<JSX.Element>(<></>);
+    const [companies, setCompanies] = createSignal<Array<Company>>([]);
+
+    createEffect(async() => {
+        const companiesData = props.companies;
+        const manager = await props.builder.getInstance();
+        setCompanies(manager.getAll());
+    });
 
     (async() => {
         const providerManager = await props.builder.getInstance();
 
         const providers = (
-            <For each={props.providers}>
-                {(p) => <ProviderTitle p={p} manager={providerManager}/>}
+            <For each={companies()}>
+                {(company) => <Empresa empresa={company} manager={providerManager}/>}
             </For>
         );
 
@@ -186,15 +166,8 @@ export function Sidebar(props: SidebarProps) {
             <Show when={!props.isSidebarCollapsed}>
                 <div style={{position: "relative"}}>
                     <h1 className={css(styles.title)}>ÉL GUIA</h1>
-                    {/*
-                    <div className={css(styles.t2)}>
-                        <div style={{"text-align": "right"}}>RUTA</div>
-                        <span></span>
-                        <div style={{"text-align": "left"}}>EMPRESA</div>
-                    </div>
-                    */}
 
-                    <Empresa empresa={mockEmpresa}/>
+                    {providersElem()}
 
                     <div className={css(styles.bottom1)}></div>
                 </div>

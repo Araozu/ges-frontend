@@ -3,9 +3,3 @@ export interface Point {
     latitude: number,
     longitude: number,
 }
-
-// A provider of public transportation
-export interface ProviderObject {
-    id: number,
-    definition: string,
-}

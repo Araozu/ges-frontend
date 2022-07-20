@@ -2,106 +2,197 @@ import L from "leaflet";
 import { Point } from "../connection/connection";
 import { Colors } from "./Colors";
 
-const serverPath = "https://system-routes.herokuapp.com/route";
+const serverPath = "https://system-routes.herokuapp.com";
 
-class Provider {
+
+interface Concession_ {
+    id: number,
+    name: string,
+}
+
+// /company
+export interface Company_ {
+    id: number,
+    name: string,
+    allConcession: Array<Concession>,
+}
+
+// /route?id=___
+interface Route {
+    id: number,
+    latitude: number,
+    longitude: number,
+}
+
+// /coordinate?concession=___
+interface ConcessionView {
+    startDay: string,
+    endDay: string,
+    startTime: number,
+    endTime: number,
+}
+
+// /coordinate?view=___
+interface AllBusStop {
+    name: string,
+    latitude: number,
+    longitude: number,
+}
+
+/** A concession represents the routes of buses */
+export class Concession {
+    /** Id of the concession */
+    public readonly id: number;
+    /** Name of the concession */
+    public readonly name: string;
+
     /**
-     * Unique identifier of the provider
-     * @private
-     */
-    private readonly id: number;
-    /**
-     * Name of the provider
-     */
-    readonly definition: string;
-    /**
-     * Map to draw to the path of the provider
-     * @private
-     */
-    private readonly map: L.Map;
-    /**
-     * Array of dots that form a path
-     * @private
-     */
-    private path: Array<L.LatLngExpression> = [];
-    /**
-     * Color of the path, generated automatically
+     * Color of the path, generated automatically.
      * @private
      */
     private readonly color: string;
+
     /**
      * Stores the line draw it the map. If null, it has not been drawn yet.
      * @private
      */
     private polyline: L.Polyline | null = null;
+
     /**
-     * Whether this provider's path is hidden in the map
+     * Whether this path is hidden in the map
      * @private
      */
-    private hidden = false;
+    private hidden = true;
 
-    constructor(map: L.Map, param: { id: number, definition: string }) {
-        this.id = param.id;
-        this.definition = param.definition;
-        this.map = map;
+    /**
+     * A collection of points, unique for each concession.
+     * These are fetched from the server, then drawn.
+     * @private
+     */
+    private route: Array<Route> | null = null;
+
+    /**
+     * A reference to the Map in which to draw the path
+     * @private
+     */
+    private readonly map: L.Map;
+
+    constructor(id: number, name: string, map: L.Map) {
+        this.id = id;
+        this.name = name;
         this.color = Colors.next();
 
-        this.setup();
+        this.map = map;
     }
 
     /**
-     * Initializes the path of this provider
+     * Draws the route as a Polyline.
+     * Assumes the route has already been fetched from the server
      * @private
      */
-    private async setup() {
-        await this.fetchPath();
-        this.draw();
-    }
-
-    private async fetchPath() {
-        const pathsRaw = await fetch(`${serverPath}/graphics?companyId=${this.id}`);
-        const points = await pathsRaw.json() as Array<Point>;
-        this.path = points.map((point): L.LatLngExpression => [point.latitude, point.longitude]);
-    }
-
     private draw() {
-        this.polyline = L.polyline(this.path, {color: this.color})
-            .addTo(this.map);
+        if (this.route === null) {
+            throw new Error("Attempted to draw line without route.");
+        }
+
+        const arr = Concession.routeArrayToLatLngArray(this.route);
+        console.log(`Polyline for ${this.id}`);
+        console.log(arr);
+        // draw
+        this.polyline = L.polyline(arr, {color: this.color});
+        this.polyline.addTo(this.map);
     }
 
     /**
-     * Hides this line from the map
+     * Gets the route from the server
+     * @private
      */
-    public toggleHide() {
-        console.log("Toggle hide path for", this.id);
+    private async fetchPath() {
+        const pathsRaw = await fetch(`${serverPath}/coordinate?concession=${this.id}`);
+        this.route = await pathsRaw.json() as Array<Route>;
+    }
+
+    public async show() {
+        console.log(`Show route for ${this.id}`);
+
+        if (this.route === null) {
+            console.log(`Fetching route for ${this.id}`);
+            await this.fetchPath();
+        }
+
         if (this.polyline === null) {
-            console.log("Polyline for", this.id, "is not initialized");
-            return;
+            console.log(`Draw polyline for ${this.id}`);
+            this.draw();
         }
-        if (this.hidden) {
-            this.polyline.setStyle({
-                opacity: 1,
-            });
-        } else {
-            this.polyline.setStyle({
-                opacity: 0,
-            });
+
+        this.polyline!.setStyle({
+            opacity: 1,
+        });
+        this.hidden = false;
+    }
+
+    public async hide() {
+        console.log(`Hide path for ${this.id}`);
+
+        if (this.route === null) {
+            console.log(`Fetching route for ${this.id}`);
+            await this.fetchPath();
         }
-        this.hidden = !this.hidden;
+
+        if (this.polyline === null) {
+            console.log(`Draw polyline for ${this.id}`);
+            this.draw();
+        }
+
+        this.polyline!.setStyle({
+            opacity: 0,
+        });
+        this.hidden = true;
+    }
+
+    public remove() {
+        this.polyline?.remove();
+    }
+
+    private static routeArrayToLatLngArray(routeArray: Array<Route>): Array<L.LatLngExpression> {
+        return routeArray.map((route) => [route.latitude, route.longitude]);
+    }
+}
+
+/** A company provides transportation services. E.g. "06 de diciembre" */
+export class Company {
+    /**
+     * Unique identifier of the company
+     * @private
+     */
+    public readonly id: number;
+    /**
+     * Name of the company
+     */
+    public readonly name: string;
+
+    public readonly concessions: Array<Concession>;
+
+    constructor(map: L.Map, param: { id: number, name: string, allConcession: Array<Concession_> }) {
+        this.id = param.id;
+        this.name = param.name;
+
+        this.concessions = param.allConcession.map((c) => new Concession(c.id, c.name, map));
+    }
+
+    public getConcessiongById(concessionId: number): Concession | null {
+        return this.concessions.find((c) => c.id === concessionId) ?? null;
     }
 
     /**
      * Removes this provider from the map. This object shouldn't be used afterwards.
      */
     public remove() {
-        this.polyline?.remove();
+        this.concessions.forEach((c) => c.remove());
     }
 }
 
-type RawProviderArr = Array<{
-    id: number,
-    definition: string,
-}>
+export type RawProviderArr = Array<Company_>
 
 export class ProviderManagerBuilder {
     private providerManagerInstance: ProviderManager | null = null;
@@ -152,7 +243,7 @@ export class ProviderManagerBuilder {
 }
 
 export class ProviderManager {
-    private readonly providers: Map<number, Provider> = new Map();
+    private readonly providers: Map<number, Company> = new Map();
 
     private readonly map: L.Map;
 
@@ -167,15 +258,20 @@ export class ProviderManager {
     public update(providersInfo: RawProviderArr) {
         for (const provider of providersInfo) {
             if (this.providers.has(provider.id)) {
-                this.providers.get(provider.id)?.remove();
+                this.providers.get(provider.id)
+                    ?.remove();
             }
 
-            const newProvider = new Provider(this.map, provider);
+            const newProvider = new Company(this.map, provider);
             this.providers.set(provider.id, newProvider);
         }
     }
 
-    public getById(id: number): Provider | null {
+    public getById(id: number): Company | null {
         return this.providers.get(id) ?? null;
+    }
+
+    public getAll(): Array<Company> {
+        return Array.from(this.providers.values());
     }
 }
