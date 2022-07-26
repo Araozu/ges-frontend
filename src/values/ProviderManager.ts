@@ -97,7 +97,7 @@ export class Concession {
 
         const arr = Concession.routeArrayToLatLngArray(this.route);
         console.log(`Polyline for ${this.id}`);
-        console.log(arr);
+        console.log(JSON.stringify(arr));
         // draw
         this.polyline = L.polyline(arr, {color: this.color});
         this.polyline.addTo(this.map);
@@ -203,6 +203,12 @@ export class ProviderManagerBuilder {
      * @param map
      */
     setMap(map: L.Map): this {
+        console.log("Set map...");
+        if (this.providerManagerInstance !== null) {
+            console.log("Map already set...");
+            return this;
+        }
+
         this.providerManagerInstance = new ProviderManager(map);
         this.hasBeenInstantiated = true;
         return this;
@@ -240,6 +246,10 @@ export class ProviderManagerBuilder {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         return this.providerManagerInstance!;
     }
+
+    public hasInstance(): boolean {
+        return this.hasBeenInstantiated;
+    }
 }
 
 export class ProviderManager {
@@ -249,6 +259,10 @@ export class ProviderManager {
 
     constructor(map: L.Map) {
         this.map = map;
+        // Debug
+        console.log("Add map for debug - ProviderManager::constructor");
+        /// @ts-ignore
+        window.cmap = map;
     }
 
     /**

@@ -36,8 +36,14 @@ export function Map(props: { providers: Array<Company_>, builder: ProviderManage
     const [containerClass, setContainerClass] = createSignal(hiddenContainerClass);
 
     onMount(() => setTimeout(() => {
+        if (props.builder.hasInstance()) {
+            console.log("Map::onMount - builder has a map instance...");
+            return;
+        }
+
         // Set the map in the Map Manager
         const map = L.map(mapContainer as HTMLElement);
+        console.log("Map::onMount - setMap in manager");
         const manager = props.builder.setMap(map).build();
 
         // Set copyright of map

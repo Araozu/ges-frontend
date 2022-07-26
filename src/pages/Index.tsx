@@ -2,7 +2,7 @@ import { Map } from "../components/Map";
 import { createSignal } from "solid-js";
 import { Sidebar } from "./Index/Sidebar";
 import { StyleSheet, css } from "aphrodite/no-important";
-import { Company, Company_, ProviderManager, ProviderManagerBuilder } from "../values/ProviderManager";
+import { Company_, ProviderManagerBuilder } from "../values/ProviderManager";
 
 const serverPath = "https://system-routes.herokuapp.com";
 
@@ -23,9 +23,10 @@ const styles = StyleSheet.create({
     },
 });
 
+const providerManagerBuilder = new ProviderManagerBuilder();
 export function Index() {
     const [providers, setProviders] = createSignal<Company_[]>([]);
-    const providerManagerBuilder = new ProviderManagerBuilder();
+
 
     const [isSidebarCollapsed, setIsSidebarCollapsed] = createSignal(false);
     const sidebarColumnSize = () => (isSidebarCollapsed() ? "3rem" : "24rem");
