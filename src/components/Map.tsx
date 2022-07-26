@@ -2,7 +2,8 @@ import { createEffect, createSignal, onMount } from "solid-js";
 import { StyleSheet, css } from "aphrodite/no-important";
 import L, { LatLng } from "leaflet";
 
-import { Company_, ProviderManager, ProviderManagerBuilder } from "../values/ProviderManager";
+import { Company_, ProviderManager} from "../values/ProviderManager";
+import { ProviderManagerBuilder } from "../values/ProviderManagerBuilder";
 
 const styles = StyleSheet.create({
     container: {
@@ -37,13 +38,11 @@ export function Map(props: { providers: Array<Company_>, builder: ProviderManage
 
     onMount(() => setTimeout(() => {
         if (props.builder.hasInstance()) {
-            console.log("Map::onMount - builder has a map instance...");
             return;
         }
 
         // Set the map in the Map Manager
         const map = L.map(mapContainer as HTMLElement);
-        console.log("Map::onMount - setMap in manager");
         const manager = props.builder.setMap(map).build();
 
         // Set copyright of map

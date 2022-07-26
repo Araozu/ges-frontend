@@ -1,8 +1,10 @@
 import { StyleSheet, css } from "aphrodite";
 import { createSignal, For, JSX, Show, createMemo, createEffect } from "solid-js";
 import { FilledTonalButton } from "../../components/Buttons";
-import { Company, Company_, ProviderManager, ProviderManagerBuilder } from "../../values/ProviderManager";
+import { Company_, ProviderManager} from "../../values/ProviderManager";
 import { Empresa } from "./SidebarEmpresa";
+import { ProviderManagerBuilder } from "../../values/ProviderManagerBuilder";
+import { Company } from "../../values/Company";
 
 const styles = StyleSheet.create({
     container: {

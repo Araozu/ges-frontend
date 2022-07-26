@@ -1,6 +1,8 @@
 import { css, StyleSheet } from "aphrodite";
 import { createSignal, For, onCleanup, Show } from "solid-js";
-import { Company, Concession, ProviderManager } from "../../values/ProviderManager";
+import { ProviderManager } from "../../values/ProviderManager";
+import { Concession } from "../../values/Concession";
+import { Company } from "../../values/Company";
 
 const styles = StyleSheet.create({
     empresaTopBar: {

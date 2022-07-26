@@ -2,7 +2,8 @@ import { Map } from "../components/Map";
 import { createSignal } from "solid-js";
 import { Sidebar } from "./Index/Sidebar";
 import { StyleSheet, css } from "aphrodite/no-important";
-import { Company_, ProviderManagerBuilder } from "../values/ProviderManager";
+import { Company_} from "../values/ProviderManager";
+import { ProviderManagerBuilder } from "../values/ProviderManagerBuilder";
 
 const serverPath = "https://system-routes.herokuapp.com";
 
