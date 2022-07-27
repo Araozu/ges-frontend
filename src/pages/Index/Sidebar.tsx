@@ -1,7 +1,6 @@
-import { StyleSheet, css } from "aphrodite";
-import { createSignal, For, JSX, Show, createMemo, createEffect } from "solid-js";
-import { FilledTonalButton } from "../../components/Buttons";
-import { Company_, ProviderManager} from "../../values/ProviderManager";
+import { css, StyleSheet } from "aphrodite";
+import { createEffect, createSignal, For, JSX, Show } from "solid-js";
+import { Company_ } from "../../values/ProviderManager";
 import { Empresa } from "./SidebarEmpresa";
 import { ProviderManagerBuilder } from "../../values/ProviderManagerBuilder";
 import { Company } from "../../values/Company";
@@ -70,6 +69,14 @@ const styles = StyleSheet.create({
         backgroundColor: "#F57C00",
         position: "absolute",
         bottom: "0",
+        zIndex: 10,
+    },
+    rutaPortal: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        zIndex: 5,
     },
 });
 
@@ -141,6 +148,7 @@ type SidebarProps = {
     isSidebarCollapsed: boolean,
     toggleSidebarFn: () => void,
 }
+
 export function Sidebar(props: SidebarProps) {
     const [providersElem, setProvidersElem] = createSignal<JSX.Element>(<></>);
     const [companies, setCompanies] = createSignal<Array<Company>>([]);
@@ -167,9 +175,12 @@ export function Sidebar(props: SidebarProps) {
         <div className={css(styles.container)}>
             <Show when={!props.isSidebarCollapsed}>
                 <div style={{position: "relative"}}>
-                    <h1 className={css(styles.title)}>ÉL GUIA</h1>
+                    <h1 className={css(styles.title)}>EL GUIA</h1>
 
-                    {providersElem()}
+                    <div style={{position: "relative"}}>
+                        {providersElem()}
+                        <div id="ruta_portal" className={css(styles.rutaPortal)}></div>
+                    </div>
 
                     <div className={css(styles.bottom1)}></div>
                 </div>

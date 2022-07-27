@@ -3,6 +3,7 @@ import { createSignal, For, onCleanup, Show } from "solid-js";
 import { ProviderManager } from "../../values/ProviderManager";
 import { Concession } from "../../values/Concession";
 import { Company } from "../../values/Company";
+import { Portal } from "solid-js/web";
 
 const styles = StyleSheet.create({
     empresaTopBar: {
@@ -52,6 +53,12 @@ const styles = StyleSheet.create({
     },
 });
 
+const infoStyles = StyleSheet.create({
+    container: {
+        backgroundColor: "var(--bg-color)",
+    },
+});
+
 export type Ruta = {
     codigo: string
 }
@@ -87,7 +94,7 @@ const useToggle = (onActive?: () => void, onInactive?: () => void) => {
     };
 };
 
-function ConcessionEl(props: { concession: Concession, mostrarInfo: () => void }) {
+function ConcessionEl(props: { concession: Concession, mostrarInfo: () => void, seleccionarConcession: (c: Concession) => void }) {
     const onActive = () => {
         props.concession.show();
     };
@@ -108,6 +115,11 @@ function ConcessionEl(props: { concession: Concession, mostrarInfo: () => void }
         onInactive();
     });
 
+    const onClick = () => {
+        props.seleccionarConcession(props.concession);
+        props.mostrarInfo();
+    };
+
     return (
         <>
             <div className={css(styles.ruta, styles.rutaBar)}>
@@ -124,7 +136,7 @@ function ConcessionEl(props: { concession: Concession, mostrarInfo: () => void }
                 </div>
 
                 <div className={css(styles.rutaTexto)} style={{"font-size": "0.75rem"}}>
-                    <a onClick={props.mostrarInfo} href="#">
+                    <a onClick={onClick} href="#">
                         Mas información
                     </a>
                 </div>
@@ -134,11 +146,14 @@ function ConcessionEl(props: { concession: Concession, mostrarInfo: () => void }
     );
 }
 
-function Info(props: { ocultarInfo: () => void }) {
+function Info(props: { empresa: Company, concession: Concession, ocultarInfo: () => void }) {
     return (
-        <div>
+        <div className={css(infoStyles.container)}>
             <div className={css(styles.empresaLabel)} onClick={props.ocultarInfo}>
-                6 DE DICIEMBRE
+                <span className={`${css(styles.bicon)} material-icons`}>
+                    chevron_left
+                </span>
+                {props.empresa.name}
             </div>
             <div style={{padding: "0 1.5rem"}}>
                 <div className={css(styles.infoGeneral)}>
@@ -148,7 +163,7 @@ function Info(props: { ocultarInfo: () => void }) {
                     <div>
                         Información
                         <br/>
-                        Ruta: A 007
+                        Ruta: {props.concession.name}
                         <br/>
                         Salidas: Cada 10 min
                     </div>
@@ -188,46 +203,56 @@ export function Empresa(props: { empresa: Company, manager: ProviderManager }) {
         toggleIconName,
     } = useToggle();
     const [mostrarInfo, setMostrarInfo] = createSignal(false);
+    const [activeConcession, setActiveConcession] = createSignal<Concession | null>(null);
 
     return (
         <div>
-            <Show when={!mostrarInfo()}>
-                <div className={css(styles.empresaLabel)}>
-                    Empresa
+            <div className={css(styles.empresaLabel)}>
+                Empresa
+            </div>
+            <div className={css(styles.empresaTopBar)}>
+                <div style={{"text-align": "center"}}>
+                    <span
+                        className={`${css(styles.micon)} material-icons`}
+                        onClick={toggleActive}
+                        style={toggleStyle()}
+                    >
+                        {toggleIconName()}
+                    </span>
                 </div>
-                <div className={css(styles.empresaTopBar)}>
-                    <div style={{"text-align": "center"}}>
-                        <span
-                            className={`${css(styles.micon)} material-icons`}
-                            onClick={toggleActive}
-                            style={toggleStyle()}
-                        >
-                            {toggleIconName()}
-                        </span>
-                    </div>
-                    <div className={css(styles.empresaNombre)}>
-                        {props.empresa.name.toUpperCase()}
-                    </div>
+                <div className={css(styles.empresaNombre)}>
+                    {props.empresa.name.toUpperCase()}
                 </div>
+            </div>
 
-                <Show when={active()}>
-                    <div className={css(styles.rutas)}>
-                        <div className={css(styles.empresaLabel)}>
-                            Rutas
-                        </div>
-                        <For each={props.empresa.concessions}>
-                            {(concession) => (
-                                <ConcessionEl
-                                    concession={concession}
-                                    mostrarInfo={() => setMostrarInfo(true)}
-                                />
-                            )}
-                        </For>
+            <Show when={active()}>
+                <div className={css(styles.rutas)}>
+                    <div className={css(styles.empresaLabel)}>
+                        Rutas
                     </div>
-                </Show>
+                    <For each={props.empresa.concessions}>
+                        {(concession) => (
+                            <ConcessionEl
+                                concession={concession}
+                                mostrarInfo={() => setMostrarInfo(true)}
+                                seleccionarConcession={(it) => setActiveConcession(it)}
+                            />
+                        )}
+                    </For>
+                </div>
             </Show>
+
             <Show when={mostrarInfo()}>
-                <Info ocultarInfo={() => setMostrarInfo(false)}/>
+                <Portal mount={document.getElementById("ruta_portal")!}>
+                    <Info
+                        empresa={props.empresa}
+                        concession={activeConcession()!}
+                        ocultarInfo={() => {
+                            setMostrarInfo(false);
+                            setActiveConcession(null);
+                        }}
+                    />
+                </Portal>
             </Show>
         </div>
     );
