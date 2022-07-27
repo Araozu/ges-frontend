@@ -1,7 +1,7 @@
 import { css, StyleSheet } from "aphrodite";
 import { createEffect, createSignal, For, JSX, Show } from "solid-js";
 import { Company_ } from "../../values/ProviderManager";
-import { Empresa } from "./SidebarEmpresa";
+import { Empresa } from "./Sidebar/SidebarEmpresa";
 import { ProviderManagerBuilder } from "../../values/ProviderManagerBuilder";
 import { Company } from "../../values/Company";
 import { Destino } from "./Sidebar/Destino";
@@ -164,7 +164,7 @@ type SidebarProps = {
 export function Sidebar(props: SidebarProps) {
     const [providersElem, setProvidersElem] = createSignal<JSX.Element>(<></>);
     const [companies, setCompanies] = createSignal<Array<Company>>([]);
-    const [activeRoute, setActiveRoute] = createSignal<"rutas" | "destino">("destino");
+    const [activeRoute, setActiveRoute] = createSignal<"rutas" | "destino">("rutas");
 
     createEffect(async() => {
         const companiesData = props.companies;
@@ -177,7 +177,7 @@ export function Sidebar(props: SidebarProps) {
 
         const providers = (
             <For each={companies()}>
-                {(company) => <Empresa empresa={company} manager={providerManager}/>}
+                {(company) => <Empresa empresa={company}/>}
             </For>
         );
 

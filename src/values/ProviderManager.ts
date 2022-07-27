@@ -60,4 +60,15 @@ export class ProviderManager {
     public getAll(): Array<Company> {
         return Array.from(this.providers.values());
     }
+
+    public getCompanyByConcessionId(concessionId: number): Company | null {
+        for (const company of this.getAll()) {
+            const concession = company.getConcessiongById(concessionId);
+            if (concession !== null) {
+                return company;
+            }
+        }
+
+        return null;
+    }
 }

@@ -1,10 +1,9 @@
 import { css, StyleSheet } from "aphrodite";
 import { createSignal, For, onCleanup, onMount, Show } from "solid-js";
-import { ProviderManager } from "../../values/ProviderManager";
-import { Concession } from "../../values/Concession";
-import { Company } from "../../values/Company";
+import { Concession } from "../../../values/Concession";
+import { Company } from "../../../values/Company";
 import { Portal } from "solid-js/web";
-import { AllBusStop, AllHorary } from "../../values/RemoteInterfaces";
+import { AllBusStop, AllHorary } from "../../../values/RemoteInterfaces";
 
 const styles = StyleSheet.create({
     empresaTopBar: {
@@ -134,7 +133,7 @@ function ConcessionEl(props: { concession: Concession, mostrarInfo: () => void, 
                 </div>
 
                 <div className={css(styles.rutaTexto)} style={{"font-size": "0.75rem"}}>
-                    <a onClick={onClick} href="#">
+                    <a onClick={onClick} href="src/pages/Index/Sidebar/SidebarEmpresa#">
                         Mas información
                     </a>
                 </div>
@@ -200,7 +199,7 @@ function Info(props: { empresa: Company, concession: Concession, ocultarInfo: ()
     );
 }
 
-export function Empresa(props: { empresa: Company, manager: ProviderManager }) {
+export function Empresa(props: { empresa: Company }) {
     const {
         active,
         toggleActive,

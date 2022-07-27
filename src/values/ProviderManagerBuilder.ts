@@ -5,20 +5,20 @@ import { ProviderManager } from "./ProviderManager";
  * Used to build and access the instance of ProviderManager
  */
 export class ProviderManagerBuilder {
-    private providerManagerInstance: ProviderManager | null = null;
-    protected hasBeenInstantiated = false;
+    private static providerManagerInstance: ProviderManager | null = null;
+    protected static hasBeenInstantiated = false;
 
     /**
      * Sets the map to be used in the ProviderManager.
      * @param map
      */
     setMap(map: L.Map): this {
-        if (this.providerManagerInstance !== null) {
+        if (ProviderManagerBuilder.providerManagerInstance !== null) {
             return this;
         }
 
-        this.providerManagerInstance = new ProviderManager(map);
-        this.hasBeenInstantiated = true;
+        ProviderManagerBuilder.providerManagerInstance = new ProviderManager(map);
+        ProviderManagerBuilder.hasBeenInstantiated = true;
         return this;
     }
 
@@ -26,18 +26,18 @@ export class ProviderManagerBuilder {
      * Builds the ProviderManager
      */
     build(): ProviderManager {
-        if (!this.hasBeenInstantiated) {
+        if (!ProviderManagerBuilder.hasBeenInstantiated) {
             throw new Error("Tried to build a ProviderManager without setting the map.");
         }
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        return this.providerManagerInstance!;
+        return ProviderManagerBuilder.providerManagerInstance!;
     }
 
     private waitForInstance() {
         return new Promise<void>((resolve) => {
             let interval = 0;
             interval = setInterval(() => {
-                if (this.hasBeenInstantiated) {
+                if (ProviderManagerBuilder.hasBeenInstantiated) {
                     clearInterval(interval);
                     resolve();
                 }
@@ -52,10 +52,10 @@ export class ProviderManagerBuilder {
     async getInstance(): Promise<ProviderManager> {
         await this.waitForInstance();
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        return this.providerManagerInstance!;
+        return ProviderManagerBuilder.providerManagerInstance!;
     }
 
     public hasInstance(): boolean {
-        return this.hasBeenInstantiated;
+        return ProviderManagerBuilder.hasBeenInstantiated;
     }
 }
