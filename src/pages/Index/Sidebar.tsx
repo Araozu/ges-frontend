@@ -89,12 +89,21 @@ const bar = StyleSheet.create({
     },
 });
 
-function IconBar(props: { isSidebarCollapsed: boolean, toggleSidebar: () => void }) {
+interface IconBarProps {
+    isSidebarCollapsed: boolean,
+    toggleSidebar: () => void,
+    activeRoute: "rutas" | "destino",
+    setActiveRoute: (s: "rutas" | "destino") => void,
+}
+function IconBar(props: IconBarProps) {
     const toggleIconName = () => (props.isSidebarCollapsed ? "keyboard_double_arrow_right" : "keyboard_double_arrow_left");
 
     const buttonClickFn = () => {
         props.toggleSidebar();
     };
+
+    const rutasStyle = () => (props.activeRoute === "rutas" ? {"background-color": "#06384B"} : {});
+    const destinoStyle = () => (props.activeRoute === "destino" ? {"background-color": "#06384B"} : {});
 
     return (
         <div className={css(styles.bar)}>
@@ -103,8 +112,8 @@ function IconBar(props: { isSidebarCollapsed: boolean, toggleSidebar: () => void
             </span>
             <br/>
             <br/>
-            <div style={{"background-color": "#06384B"}}>
-                <button className={css(bar.button)}>
+            <div style={rutasStyle()}>
+                <button className={css(bar.button)} onClick={() => props.setActiveRoute("rutas")}>
                     <span className={`${css(styles.bicon)} material-icons`}>
                         moving
                     </span>
@@ -112,8 +121,8 @@ function IconBar(props: { isSidebarCollapsed: boolean, toggleSidebar: () => void
                     <span className={css(styles.blabel)}>RUTAS</span>
                 </button>
             </div>
-            <div>
-                <button className={css(bar.button)}>
+            <div style={destinoStyle()}>
+                <button className={css(bar.button)} onClick={() => props.setActiveRoute("destino")}>
                     <span className={`${css(styles.bicon)} material-icons`}>
                         airline_stops
                     </span>
@@ -154,6 +163,7 @@ type SidebarProps = {
 export function Sidebar(props: SidebarProps) {
     const [providersElem, setProvidersElem] = createSignal<JSX.Element>(<></>);
     const [companies, setCompanies] = createSignal<Array<Company>>([]);
+    const [activeRoute, setActiveRoute] = createSignal<"rutas" | "destino">("rutas");
 
     createEffect(async() => {
         const companiesData = props.companies;
@@ -176,18 +186,30 @@ export function Sidebar(props: SidebarProps) {
     return (
         <div className={css(styles.container)}>
             <Show when={!props.isSidebarCollapsed}>
+
                 <div style={{position: "relative"}}>
                     <h1 className={css(styles.title)}>EL GUIA</h1>
 
-                    <div style={{position: "relative"}}>
-                        {providersElem()}
-                        <div id="ruta_portal" className={css(styles.rutaPortal)}></div>
-                    </div>
+                    <Show when={activeRoute() === "rutas"}>
+                        <div style={{position: "relative"}}>
+                            {providersElem()}
+                            <div id="ruta_portal" className={css(styles.rutaPortal)}></div>
+                        </div>
+                    </Show>
+                    <Show when={activeRoute() === "destino"}>
+                        <p>:D</p>
+                    </Show>
 
                     <div className={css(styles.bottom1)}></div>
                 </div>
+
             </Show>
-            <IconBar isSidebarCollapsed={props.isSidebarCollapsed} toggleSidebar={props.toggleSidebarFn}/>
+            <IconBar
+                isSidebarCollapsed={props.isSidebarCollapsed}
+                toggleSidebar={props.toggleSidebarFn}
+                activeRoute={activeRoute()}
+                setActiveRoute={(it) => setActiveRoute(it)}
+            />
         </div>
     );
 }
