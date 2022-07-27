@@ -4,6 +4,7 @@ import { Company_ } from "../../values/ProviderManager";
 import { Empresa } from "./SidebarEmpresa";
 import { ProviderManagerBuilder } from "../../values/ProviderManagerBuilder";
 import { Company } from "../../values/Company";
+import { Destino } from "./Sidebar/Destino";
 
 const styles = StyleSheet.create({
     container: {
@@ -163,7 +164,7 @@ type SidebarProps = {
 export function Sidebar(props: SidebarProps) {
     const [providersElem, setProvidersElem] = createSignal<JSX.Element>(<></>);
     const [companies, setCompanies] = createSignal<Array<Company>>([]);
-    const [activeRoute, setActiveRoute] = createSignal<"rutas" | "destino">("rutas");
+    const [activeRoute, setActiveRoute] = createSignal<"rutas" | "destino">("destino");
 
     createEffect(async() => {
         const companiesData = props.companies;
@@ -197,7 +198,7 @@ export function Sidebar(props: SidebarProps) {
                         </div>
                     </Show>
                     <Show when={activeRoute() === "destino"}>
-                        <p>:D</p>
+                        <Destino />
                     </Show>
 
                     <div className={css(styles.bottom1)}></div>

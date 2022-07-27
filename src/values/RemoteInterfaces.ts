@@ -24,3 +24,6 @@ export interface ConcessionInfo {
     allHorary: Array<AllHorary>,
     allBusStop: Array<AllBusStop>,
 }
+
+// /search-route?latitude=___&longitude=___&scope=___
+export type RouteSearch = Array<number> // Array de ids de concesiones

@@ -1,9 +1,10 @@
 import { createEffect, createSignal, onMount } from "solid-js";
-import { StyleSheet, css } from "aphrodite/no-important";
+import { css, StyleSheet } from "aphrodite/no-important";
 import L, { LatLng } from "leaflet";
 
-import { Company_, ProviderManager} from "../values/ProviderManager";
+import { Company_, ProviderManager } from "../values/ProviderManager";
 import { ProviderManagerBuilder } from "../values/ProviderManagerBuilder";
+import { setLastMapMarker } from "../values/State";
 
 const styles = StyleSheet.create({
     container: {
@@ -43,7 +44,8 @@ export function Map(props: { providers: Array<Company_>, builder: ProviderManage
 
         // Set the map in the Map Manager
         const map = L.map(mapContainer as HTMLElement);
-        const manager = props.builder.setMap(map).build();
+        const manager = props.builder.setMap(map)
+            .build();
 
         // Set copyright of map
         L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
@@ -53,7 +55,8 @@ export function Map(props: { providers: Array<Company_>, builder: ProviderManage
             tileSize: 512,
             zoomOffset: -1,
             accessToken: "pk.eyJ1IjoiYXJhb3p1IiwiYSI6ImNsM2F0eTZoOTAwaHMzcWsyZGVvNm02ajcifQ.MUoj0PaUU-aS09VnomLXPg",
-        }).addTo(map);
+        })
+            .addTo(map);
 
         // Set map to Arequipa
         const bound = L.latLngBounds([-16.496829, -71.493178], [-16.340929, -71.587129]);
@@ -66,6 +69,14 @@ export function Map(props: { providers: Array<Company_>, builder: ProviderManage
 
         useLines(map, manager, () => props.providers);
         setContainerClass(normalContainerClass);
+
+        // Map on click
+        map.on("click", (ev) => {
+            /// @ts-ignore
+            const latlng = map.mouseEventToLatLng(ev.originalEvent);
+            console.log(latlng);
+            setLastMapMarker([latlng.lat, latlng.lng]);
+        });
     }, 1000));
 
     return (
