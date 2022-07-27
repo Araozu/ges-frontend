@@ -14,12 +14,13 @@ export interface AllBusStop {
     longitude: number,
 }
 
+export type AllHorary = any
 
 // /concession/view?id=____
 export interface ConcessionInfo {
     id: number,
     name: string,
     company: string,
-    allHorary: Array<unknown>,
+    allHorary: Array<AllHorary>,
     allBusStop: Array<AllBusStop>,
 }

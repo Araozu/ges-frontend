@@ -1,9 +1,10 @@
 import { css, StyleSheet } from "aphrodite";
-import { createSignal, For, onCleanup, Show } from "solid-js";
+import { createSignal, For, onCleanup, onMount, Show } from "solid-js";
 import { ProviderManager } from "../../values/ProviderManager";
 import { Concession } from "../../values/Concession";
 import { Company } from "../../values/Company";
 import { Portal } from "solid-js/web";
+import { AllBusStop, AllHorary } from "../../values/RemoteInterfaces";
 
 const styles = StyleSheet.create({
     empresaTopBar: {
@@ -56,6 +57,7 @@ const styles = StyleSheet.create({
 const infoStyles = StyleSheet.create({
     container: {
         backgroundColor: "var(--bg-color)",
+        height: "90vh",
     },
 });
 
@@ -109,11 +111,7 @@ function ConcessionEl(props: { concession: Concession, mostrarInfo: () => void, 
     } = useToggle(onActive, onInactive);
 
     // Cuando se desmonta el componente, retirar cualquier ruta del mapa
-    onCleanup(() => {
-        // TODO: Retirar ruta del mapa
-        console.log("Ruta cleanup");
-        onInactive();
-    });
+    onCleanup(onInactive);
 
     const onClick = () => {
         props.seleccionarConcession(props.concession);
@@ -147,6 +145,16 @@ function ConcessionEl(props: { concession: Concession, mostrarInfo: () => void, 
 }
 
 function Info(props: { empresa: Company, concession: Concession, ocultarInfo: () => void }) {
+    const [horarios, setHorarios] = createSignal<Array<AllHorary>>([]);
+    const [busStops, setBusStops] = createSignal<Array<AllBusStop>>([]);
+
+    onMount(async() => {
+        console.log("info render :D (mount)");
+        const additionalInfo = await props.concession.loadAdditionalInfo();
+        setHorarios(additionalInfo.allHorary);
+        setBusStops(additionalInfo.allBusStop);
+    });
+
     return (
         <div className={css(infoStyles.container)}>
             <div className={css(styles.empresaLabel)} onClick={props.ocultarInfo}>
@@ -161,7 +169,7 @@ function Info(props: { empresa: Company, concession: Concession, ocultarInfo: ()
                         departure_board
                     </span>
                     <div>
-                        Información
+                        <b>Información:</b>
                         <br/>
                         Ruta: {props.concession.name}
                         <br/>
@@ -184,9 +192,6 @@ function Info(props: { empresa: Company, concession: Concession, ocultarInfo: ()
                 <div>
                     <p><b>Paraderos:</b></p>
                     <ul>
-                        <li className={css(styles.infoListaItem)}>Terminal La Paz</li>
-                        <li className={css(styles.infoListaItem)}>Terminal La Paz</li>
-                        <li className={css(styles.infoListaItem)}>Terminal La Paz</li>
                         <li className={css(styles.infoListaItem)}>Terminal La Paz</li>
                     </ul>
                 </div>

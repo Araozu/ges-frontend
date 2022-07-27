@@ -89,7 +89,7 @@ const bar = StyleSheet.create({
     },
 });
 
-function Bar(props: { isSidebarCollapsed: boolean, toggleSidebar: () => void }) {
+function IconBar(props: { isSidebarCollapsed: boolean, toggleSidebar: () => void }) {
     const toggleIconName = () => (props.isSidebarCollapsed ? "keyboard_double_arrow_right" : "keyboard_double_arrow_left");
 
     const buttonClickFn = () => {
@@ -121,6 +121,7 @@ function Bar(props: { isSidebarCollapsed: boolean, toggleSidebar: () => void }) 
                     <span className={css(styles.blabel)}>DESTINO</span>
                 </button>
             </div>
+            {/*
             <div>
                 <button className={css(bar.button)}>
                     <span className={`${css(styles.bicon)} material-icons`}>
@@ -130,6 +131,7 @@ function Bar(props: { isSidebarCollapsed: boolean, toggleSidebar: () => void }) 
                     <span className={css(styles.blabel)}>LUGARES</span>
                 </button>
             </div>
+            */}
 
             <div className={css(styles.bottom1)}>
                 <button className={css(bar.button)} onClick={buttonClickFn}>
@@ -185,7 +187,7 @@ export function Sidebar(props: SidebarProps) {
                     <div className={css(styles.bottom1)}></div>
                 </div>
             </Show>
-            <Bar isSidebarCollapsed={props.isSidebarCollapsed} toggleSidebar={props.toggleSidebarFn}/>
+            <IconBar isSidebarCollapsed={props.isSidebarCollapsed} toggleSidebar={props.toggleSidebarFn}/>
         </div>
     );
 }

@@ -2,6 +2,13 @@ import L from "leaflet";
 import { Colors } from "./Colors";
 import { serverPath } from "./Constants";
 import { Route } from "./ProviderManager";
+import { AllBusStop, AllHorary } from "./RemoteInterfaces";
+
+
+export interface ConcessionAdditionalInfo {
+    allHorary: Array<AllHorary>,
+    allBusStop: Array<AllBusStop>,
+}
 
 /**
  * A concession represents the routes of buses
@@ -42,6 +49,13 @@ export class Concession {
      * @private
      */
     private readonly map: L.Map;
+
+    /**
+     * Contains information about bus stops and schedules.
+     * It's only populated when requested via the method loadAdditionalInfo.
+     * @private
+     */
+    private additionalInfo: ConcessionAdditionalInfo | null = null;
 
     constructor(id: number, name: string, map: L.Map) {
         this.id = id;
@@ -119,5 +133,22 @@ export class Concession {
 
     private static routeArrayToLatLngArray(routeArray: Array<Route>): Array<L.LatLngExpression> {
         return routeArray.map((route) => [route.latitude, route.longitude]);
+    }
+
+    public async loadAdditionalInfo(): Promise<ConcessionAdditionalInfo> {
+        if (this.additionalInfo !== null) {
+            return this.additionalInfo!;
+        }
+
+        const response = await fetch(`${serverPath}/concession/view?id=${this.id}`);
+        const obj = await response.json();
+
+        const additionalInfo = {
+            allHorary: obj.allHorary,
+            allBusStop: obj.allBusStop,
+        };
+
+        this.additionalInfo = additionalInfo;
+        return additionalInfo;
     }
 }
