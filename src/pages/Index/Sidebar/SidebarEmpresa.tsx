@@ -191,7 +191,9 @@ function Info(props: { empresa: Company, concession: Concession, ocultarInfo: ()
                 <div>
                     <p><b>Paraderos:</b></p>
                     <ul>
-                        <li className={css(styles.infoListaItem)}>Terminal La Paz</li>
+                        <For each={busStops()} fallback={<span>Sin paraderos</span>}>
+                            {(x) => <li className={css(styles.infoListaItem)}>{x.name}</li>}
+                        </For>
                     </ul>
                 </div>
             </div>
