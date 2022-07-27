@@ -52,7 +52,12 @@ const styles = StyleSheet.create({
 
 function getConcessionSearchUrl(p1: [number, number]): string {
     const [x, y] = p1;
-    return `${serverPath}/search-route?latitude=${x}&longitude=${y}&scope=500`;
+    return `${serverPath}/search-route?latitude=${x}&longitude=${y}&scope=100`;
+}
+
+interface ServerResponse {
+    /** Nombre de la concesion */
+    name: string,
 }
 
 type ConcessionID = number;
@@ -108,6 +113,66 @@ function searchConcession(p1: [number, number], p2: [number, number]): Promise<A
                 for (const id1 of result1) {
                     for (const id2 of result2) {
                         if (id1 === id2) ids.push(id2);
+                    }
+                }
+
+                resolve(ids);
+            });
+    });
+}
+
+
+/**
+ * Busca concesiones que esten cerca a 2 puntos.
+ * @param p1 Primer punto
+ * @param p2 Segundo punto
+ * @return Una lista de los ids de las concesiones que pasan por ambos puntos
+ */
+function searchConcessionv2(p1: [number, number], p2: [number, number]): Promise<Array<ServerResponse>> {
+
+    const promise1 = new Promise<Array<ServerResponse>>((resolve) => {
+        fetch(getConcessionSearchUrl(p1))
+            .then((x) => x.json())
+            .then((res) => {
+                if (res.content === "Error") {
+                    resolve([{name: "C C08"}]);
+                } else {
+                    resolve(res);
+                }
+            })
+            .catch((err) => {
+                console.error("Destino::searchConcession - error en peticion 1.");
+                console.error(err);
+                resolve([{name: "C C08"}]);
+            });
+    });
+
+    const promise2 = new Promise<Array<ServerResponse>>((resolve) => {
+        fetch(getConcessionSearchUrl(p2))
+            .then((x) => x.json())
+            .then((res) => {
+                if (res.content === "Error") {
+                    resolve([{name: "C C08"}]);
+                } else {
+                    resolve(res);
+                }
+            })
+            .catch((err) => {
+                console.error("Destino::searchConcession - error en peticion 2.");
+                console.error(err);
+                resolve([{name: "C C08"}]);
+            });
+    });
+
+    return new Promise<Array<ServerResponse>>((resolve) => {
+        Promise.all([promise1, promise2])
+            .then(([result1, result2]) => {
+                const ids = [];
+                console.log(result1, result2);
+
+                for (const id1 of result1) {
+                    for (const id2 of result2) {
+                        if (id1.name === id2.name) ids.push(id2);
                     }
                 }
 
@@ -177,7 +242,7 @@ export function Destino() {
 
         if (origen === undefined || destino === undefined) return;
 
-        const concessionPromise = searchConcession(posOrigen()!, posDestino()!);
+        const concessionPromise = searchConcessionv2(posOrigen()!, posDestino()!);
         const managerPromise = new ProviderManagerBuilder().getInstance();
 
         const [ids, manager] = await Promise.all([concessionPromise, managerPromise]);
@@ -187,7 +252,7 @@ export function Destino() {
 
         const newCompanies = [];
         for (const id of ids) {
-            const company = manager.getCompanyByConcessionId(id);
+            const company = manager.getCompanyByConcessionName(id.name);
             if (company !== null) {
                 newCompanies.push(company);
             }

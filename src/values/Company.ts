@@ -29,6 +29,10 @@ export class Company {
         return this.concessions.find((c) => c.id === concessionId) ?? null;
     }
 
+    public getConcessiongByName(concessionName: string): Concession | null {
+        return this.concessions.find((c) => c.name === concessionName) ?? null;
+    }
+
     /**
      * Removes this provider from the map. This object shouldn't be used afterwards.
      */

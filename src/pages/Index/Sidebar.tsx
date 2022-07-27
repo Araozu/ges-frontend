@@ -79,6 +79,11 @@ const styles = StyleSheet.create({
         width: "100%",
         zIndex: 5,
     },
+    rutasContainer: {
+        position: "relative",
+        maxHeight: "85vh",
+        overflowY: "scroll",
+    },
 });
 
 const bar = StyleSheet.create({
@@ -96,6 +101,7 @@ interface IconBarProps {
     activeRoute: "rutas" | "destino",
     setActiveRoute: (s: "rutas" | "destino") => void,
 }
+
 function IconBar(props: IconBarProps) {
     const toggleIconName = () => (props.isSidebarCollapsed ? "keyboard_double_arrow_right" : "keyboard_double_arrow_left");
 
@@ -191,15 +197,17 @@ export function Sidebar(props: SidebarProps) {
                 <div style={{position: "relative"}}>
                     <h1 className={css(styles.title)}>EL GUIA</h1>
 
-                    <Show when={activeRoute() === "rutas"}>
-                        <div style={{position: "relative"}}>
+                    <div className={css(styles.rutasContainer)}>
+                        <Show when={activeRoute() === "rutas"}>
+
                             {providersElem()}
                             <div id="ruta_portal" className={css(styles.rutaPortal)}></div>
-                        </div>
-                    </Show>
-                    <Show when={activeRoute() === "destino"}>
-                        <Destino />
-                    </Show>
+
+                        </Show>
+                        <Show when={activeRoute() === "destino"}>
+                            <Destino/>
+                        </Show>
+                    </div>
 
                     <div className={css(styles.bottom1)}></div>
                 </div>

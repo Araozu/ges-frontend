@@ -133,7 +133,7 @@ function ConcessionEl(props: { concession: Concession, mostrarInfo: () => void, 
                 </div>
 
                 <div className={css(styles.rutaTexto)} style={{"font-size": "0.75rem"}}>
-                    <a onClick={onClick} href="src/pages/Index/Sidebar/SidebarEmpresa#">
+                    <a onClick={onClick} href="#">
                         Mas información
                     </a>
                 </div>

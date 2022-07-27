@@ -71,4 +71,15 @@ export class ProviderManager {
 
         return null;
     }
+
+    public getCompanyByConcessionName(concessionName: string): Company | null {
+        for (const company of this.getAll()) {
+            const concession = company.getConcessiongByName(concessionName);
+            if (concession !== null) {
+                return company;
+            }
+        }
+
+        return null;
+    }
 }
