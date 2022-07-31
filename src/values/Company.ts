@@ -33,6 +33,14 @@ export class Company {
         return this.concessions.find((c) => c.name === concessionName) ?? null;
     }
 
+    public activateAll() {
+        setTimeout(() => {
+            for (const c of this.concessions) {
+                c.show();
+            }
+        }, 250);
+    }
+
     /**
      * Removes this provider from the map. This object shouldn't be used afterwards.
      */

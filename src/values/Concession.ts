@@ -23,7 +23,7 @@ export class Concession {
      * Color of the path, generated automatically.
      * @private
      */
-    private readonly color: string = Colors.next();
+    public readonly color: string = Colors.next();
 
     /**
      * Stores the line draw it the map. If null, it has not been drawn yet.

@@ -48,6 +48,10 @@ const styles = StyleSheet.create({
         padding: "0.25rem 0.5rem",
         cursor: "pointer",
     },
+    select: {
+        width: "calc(100% - 4.3rem)",
+        marginLeft: "2.5rem",
+    },
 });
 
 function getConcessionSearchUrl(p1: [number, number]): string {
@@ -293,6 +297,13 @@ export function Destino() {
                         value={textoDestino()}
                     />
                 </div>
+                <select className={css(styles.select)} name="rango" id="rango">
+                    <option value="">10m</option>
+                    <option value="">100m</option>
+                    <option value="">500m</option>
+                </select>
+                <br/>
+                <br/>
 
                 <div style={{"text-align": "center"}}>
                     <button className={css(styles.botonBuscar)} onClick={buscarFn}>

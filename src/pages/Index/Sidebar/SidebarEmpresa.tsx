@@ -69,8 +69,8 @@ export type Empresa = {
     rutas: Array<Ruta>,
 }
 
-const useToggle = (onActive?: () => void, onInactive?: () => void) => {
-    const [active, setActive] = createSignal(false);
+const useToggle = (onActive?: () => void, onInactive?: () => void, initial = false) => {
+    const [active, setActive] = createSignal(initial);
     const toggleStyle = () => {
         if (active()) {
             onActive?.();
@@ -107,7 +107,13 @@ function ConcessionEl(props: { concession: Concession, mostrarInfo: () => void, 
         toggleActive,
         toggleStyle,
         toggleIconName,
-    } = useToggle(onActive, onInactive);
+    } = useToggle(onActive, onInactive, true);
+
+    const c = StyleSheet.create({
+        switch: {
+            color: props.concession.color,
+        },
+    });
 
     // Cuando se desmonta el componente, retirar cualquier ruta del mapa
     onCleanup(onInactive);
@@ -121,7 +127,7 @@ function ConcessionEl(props: { concession: Concession, mostrarInfo: () => void, 
         <>
             <div className={css(styles.ruta, styles.rutaBar)}>
                 <span
-                    className={`${css(styles.micon)} material-icons`}
+                    className={`${css(styles.micon, c.switch)} material-icons`}
                     style={toggleStyle()}
                     onClick={toggleActive}
                 >

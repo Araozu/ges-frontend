@@ -1,10 +1,12 @@
-import { css, StyleSheet } from "aphrodite";
+import { css, StyleSheet } from "aphrodite/no-important";
 import { createEffect, createSignal, For, JSX, Show } from "solid-js";
 import { Company_ } from "../../values/ProviderManager";
 import { Empresa } from "./Sidebar/SidebarEmpresa";
 import { ProviderManagerBuilder } from "../../values/ProviderManagerBuilder";
 import { Company } from "../../values/Company";
 import { Destino } from "./Sidebar/Destino";
+
+import logoUrl from "../../loO.jpg";
 
 const styles = StyleSheet.create({
     container: {
@@ -93,6 +95,12 @@ const bar = StyleSheet.create({
         cursor: "pointer",
         padding: 0,
     },
+    logo: {
+        marginTop: "0.5rem",
+        width: "2.6rem",
+        height: "2.6rem",
+        borderRadius: "1.3rem",
+    },
 });
 
 interface IconBarProps {
@@ -114,9 +122,7 @@ function IconBar(props: IconBarProps) {
 
     return (
         <div className={css(styles.bar)}>
-            <span className={`${css(styles.bicon)} material-icons`}>
-                account_circle
-            </span>
+            <img className={css(bar.logo)} src={logoUrl} alt=""/>
             <br/>
             <br/>
             <div style={rutasStyle()}>
@@ -149,13 +155,6 @@ function IconBar(props: IconBarProps) {
             </div>
             */}
 
-            <div className={css(styles.bottom1)}>
-                <button className={css(bar.button)} onClick={buttonClickFn}>
-                    <span className={`${css(styles.bicon)} material-icons`}>
-                        {toggleIconName()}
-                    </span>
-                </button>
-            </div>
         </div>
     );
 }
@@ -195,7 +194,15 @@ export function Sidebar(props: SidebarProps) {
             <Show when={!props.isSidebarCollapsed}>
 
                 <div style={{position: "relative"}}>
-                    <h1 className={css(styles.title)}>EL GUIA</h1>
+                    <h1 className={css(styles.title)} style={{position: "relative"}}>
+                        <span
+                            className={`${css(styles.bicon)} material-icons`}
+                            style={{position: "absolute", left: 0, "font-size": "1rem !important"}}
+                        >
+                            menu
+                        </span>
+                        EL GUIA
+                    </h1>
 
                     <div className={css(styles.rutasContainer)}>
                         <Show when={activeRoute() === "rutas"}>
@@ -209,7 +216,6 @@ export function Sidebar(props: SidebarProps) {
                         </Show>
                     </div>
 
-                    <div className={css(styles.bottom1)}></div>
                 </div>
 
             </Show>
