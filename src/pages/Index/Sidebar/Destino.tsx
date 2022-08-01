@@ -405,7 +405,7 @@ export function Destino() {
                     />
                 </div>
                 <select className={css(styles.select)} name="rango" id="rango">
-                    <option value="10">10m</option>
+                    <option value="50">50m</option>
                     <option value="100">100m</option>
                     <option value="500" selected>500m</option>
                 </select>
