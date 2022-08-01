@@ -3,8 +3,6 @@ import { createEffect, createSignal, For, untrack } from "solid-js";
 import { lastMapMarker } from "../../../values/State";
 import { ProviderManagerBuilder } from "../../../values/ProviderManagerBuilder";
 import { serverPath } from "../../../values/Constants";
-import { Empresa } from "./SidebarEmpresa";
-import { Company } from "../../../values/Company";
 
 const styles = StyleSheet.create({
     header: {
@@ -59,9 +57,23 @@ function getConcessionSearchUrl(p1: [number, number]): string {
     return `${serverPath}/search-route?latitude=${x}&longitude=${y}&scope=100`;
 }
 
+function getConcessionSearchUrlv3(p1: [number, number], p2: [number, number], range: number): string {
+    const [x1, y1] = [p1[0].toFixed(6), p1[1].toFixed(6)];
+    const [x2, y2] = [p2[0].toFixed(6), p2[1].toFixed(6)];
+    return `${serverPath}/concession/search?lat01=${x1}&long01=${y1}&lat02=${x2}&long02=${y2}&scope=${range}`;
+}
+
 interface ServerResponse {
     /** Nombre de la concesion */
     name: string,
+}
+
+interface ServerResponse3 {
+    id: number,
+    company: string,
+    name: string,
+    frequencyValue: number,
+    frequencyUnit: string,
 }
 
 type ConcessionID = number;
@@ -185,6 +197,11 @@ function searchConcessionv2(p1: [number, number], p2: [number, number]): Promise
     });
 }
 
+async function searchConcessionv3(p1: [number, number], p2: [number, number], range: number): Promise<Array<ServerResponse3>> {
+    const request = await fetch(getConcessionSearchUrlv3(p1, p2, range));
+    return await request.json();
+}
+
 export function Destino() {
     const [posOrigen, setPosOrigen] = createSignal<[number, number]>();
     const [posDestino, setPosDestino] = createSignal<[number, number]>();
@@ -192,13 +209,13 @@ export function Destino() {
     const [origenListen, setOrigenListen] = createSignal(false);
     const [destinoListen, setDestinoListen] = createSignal(false);
 
-    const [empresas, setEmpresas] = createSignal<Array<Company>>([]);
+    const [responseDataArr, setResponseDataArr] = createSignal<Array<ServerResponse3>>([]);
 
     const textoOrigen = () => {
         const d = posOrigen();
         if (d !== undefined) {
-            const lat = d[0].toFixed(8);
-            const long = d[1].toFixed(8);
+            const lat = d[0].toFixed(6);
+            const long = d[1].toFixed(6);
             return `${lat} ${long}`;
         } else {
             return "";
@@ -221,10 +238,20 @@ export function Destino() {
         untrack(() => {
             if (origenListen()) {
                 setPosOrigen(marker);
+                new ProviderManagerBuilder().getInstance()
+                    .then((instance) => {
+                        instance.setOriginPinpoint(marker!);
+                    });
+
                 setOrigenListen(false);
             }
             if (destinoListen()) {
                 setPosDestino(marker);
+                new ProviderManagerBuilder().getInstance()
+                    .then((instance) => {
+                        instance.setTargetPinPoint(marker!);
+                    });
+
                 setDestinoListen(false);
             }
         });
@@ -246,23 +273,12 @@ export function Destino() {
 
         if (origen === undefined || destino === undefined) return;
 
-        const concessionPromise = searchConcessionv2(posOrigen()!, posDestino()!);
-        const managerPromise = new ProviderManagerBuilder().getInstance();
-
-        const [ids, manager] = await Promise.all([concessionPromise, managerPromise]);
+        const concessionata = await searchConcessionv3(posOrigen()!, posDestino()!, 500);
 
         console.log("Destino::buscarFn - ids encontrados");
-        console.log(ids);
+        console.log(concessionata);
 
-        const newCompanies = [];
-        for (const id of ids) {
-            const company = manager.getCompanyByConcessionName(id.name);
-            if (company !== null) {
-                newCompanies.push(company);
-            }
-        }
-
-        setEmpresas(newCompanies);
+        setResponseDataArr(concessionata);
     };
 
     return (
@@ -298,9 +314,9 @@ export function Destino() {
                     />
                 </div>
                 <select className={css(styles.select)} name="rango" id="rango">
-                    <option value="">10m</option>
-                    <option value="">100m</option>
-                    <option value="">500m</option>
+                    <option value="10">10m</option>
+                    <option value="100">100m</option>
+                    <option value="500" selected>500m</option>
                 </select>
                 <br/>
                 <br/>
@@ -316,8 +332,12 @@ export function Destino() {
                 {/*
                 <div className={css(styles.empresasLabel)}>Empresas</div>
                 */}
-                <For each={empresas()}>
-                    {(empresa) => <Empresa empresa={empresa} />}
+                <For each={responseDataArr()}>
+                    {(empresa: ServerResponse3) => (
+                        <div>
+                            jaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                        </div>
+                    )}
                 </For>
             </div>
         </div>

@@ -22,6 +22,14 @@ export interface Route {
     longitude: number,
 }
 
+const greenIcon = new L.Icon({
+    iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
+    shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41],
+});
 
 export type RawProviderArr = Array<Company_>
 
@@ -30,8 +38,10 @@ export type RawProviderArr = Array<Company_>
  */
 export class ProviderManager {
     private readonly providers: Map<number, Company> = new Map();
+    private originPoint: L.Marker | null = null;
+    private targetPoint: L.Marker | null = null;
 
-    private readonly map: L.Map;
+    public readonly map: L.Map;
 
     constructor(map: L.Map) {
         this.map = map;
@@ -81,5 +91,30 @@ export class ProviderManager {
         }
 
         return null;
+    }
+
+    public setOriginPinpoint(point: [number, number]) {
+        if (this.originPoint !== null) {
+            this.originPoint.setLatLng(point);
+        } else {
+            const newPoint = new L.Marker(point, {
+                title: "Origen",
+            });
+            newPoint.addTo(this.map);
+            this.originPoint = newPoint;
+        }
+    }
+
+    public setTargetPinPoint(point: [number, number]) {
+        if (this.targetPoint !== null) {
+            this.targetPoint.setLatLng(point);
+        } else {
+            const newPoint = new L.Marker(point, {
+                title: "Destino",
+                icon: greenIcon,
+            });
+            newPoint.addTo(this.map);
+            this.targetPoint = newPoint;
+        }
     }
 }
