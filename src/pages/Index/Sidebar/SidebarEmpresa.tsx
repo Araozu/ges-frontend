@@ -9,7 +9,9 @@ const styles = StyleSheet.create({
     empresaTopBar: {
         display: "grid",
         gridTemplateColumns: "30% 70%",
-        padding: "0.5rem 0",
+        padding: "0.0rem 0",
+        backgroundColor: "var(--border-color)",
+        margin: "0.5rem 0",
     },
     empresaLabel: {
         backgroundColor: "var(--border-color)",
@@ -56,7 +58,7 @@ const styles = StyleSheet.create({
 const infoStyles = StyleSheet.create({
     container: {
         backgroundColor: "var(--bg-color)",
-        height: "90vh",
+        height: "calc(100vh - 3.7rem)",
     },
 });
 
@@ -219,9 +221,6 @@ export function Empresa(props: { empresa: Company }) {
 
     return (
         <div>
-            <div className={css(styles.empresaLabel)}>
-                Empresa
-            </div>
             <div className={css(styles.empresaTopBar)}>
                 <div style={{"text-align": "center"}}>
                     <span

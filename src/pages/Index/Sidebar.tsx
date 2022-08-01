@@ -28,11 +28,11 @@ const styles = StyleSheet.create({
         borderBottom: "solid 1px var(--border-color)",
         backgroundColor: "#06384B",
         color: "white",
-        height: "2rem",
-        fontSize: "1.75rem",
+        height: "1.5rem",
+        fontSize: "1.25rem",
     },
     titleBicon: {
-        fontSize: "2rem",
+        fontSize: "1.5rem",
         cursor: "pointer",
         position: "absolute",
         left: "0.5rem",
@@ -216,7 +216,7 @@ export function Sidebar(props: SidebarProps) {
         <div className={css(styles.container)}>
             <Show when={!props.isSidebarCollapsed}>
 
-                <div style={{position: "relative"}}>
+                <div style={{position: "relative", overflow: "hidden"}}>
                     <h1 className={css(styles.title)} style={{position: "relative"}}>
                         <span
                             className={`${css(styles.bicon, styles.titleBicon)} material-icons`}
@@ -224,7 +224,7 @@ export function Sidebar(props: SidebarProps) {
                         >
                             menu
                         </span>
-                        EL GUIA
+                        TU GUIA ONLINE
                     </h1>
 
                     <div className={css(styles.rutasContainer)}>

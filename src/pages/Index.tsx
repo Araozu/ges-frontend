@@ -1,5 +1,5 @@
 import { Map } from "../components/Map";
-import { createEffect, createSignal } from "solid-js";
+import { createEffect, createSignal, untrack } from "solid-js";
 import { Sidebar } from "./Index/Sidebar";
 import { css, StyleSheet } from "aphrodite/no-important";
 import { Company_ } from "../values/ProviderManager";
@@ -53,6 +53,15 @@ export function Index() {
     };
 
     loadData(setProviders);
+
+    setTimeout(() => {
+        untrack(() => {
+            const p = providers();
+            if (p.length === 0) {
+                loadData(setProviders);
+            }
+        });
+    }, 10000);
 
     createEffect(() => {
         const p = providers();
