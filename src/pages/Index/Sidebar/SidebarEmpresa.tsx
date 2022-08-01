@@ -219,6 +219,10 @@ export function Empresa(props: { empresa: Company }) {
     const [mostrarInfo, setMostrarInfo] = createSignal(false);
     const [activeConcession, setActiveConcession] = createSignal<Concession | null>(null);
 
+    onCleanup(() => {
+        console.log("Cleanup");
+    });
+
     return (
         <div>
             <div className={css(styles.empresaTopBar)}>

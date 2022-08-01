@@ -1,11 +1,12 @@
 import { css, StyleSheet } from "aphrodite/no-important";
-import { createEffect, createSignal, For, JSX, Show } from "solid-js";
+import { createEffect, createSignal, For, onCleanup, Show } from "solid-js";
 import { Company_ } from "../../values/ProviderManager";
 import { Empresa } from "./Sidebar/SidebarEmpresa";
 import { ProviderManagerBuilder } from "../../values/ProviderManagerBuilder";
 import { Destino } from "./Sidebar/Destino";
 
 import logoUrl from "../../loO.jpg";
+import { Company } from "../../values/Company";
 
 const styles = StyleSheet.create({
     container: {
@@ -192,8 +193,18 @@ type SidebarProps = {
     toggleSidebarFn: () => void,
 }
 
+function SidebarElems(props: {companies: Company[]}) {
+    onCleanup(() => console.log("SidebarElems cleanup"));
+
+    return (
+        <For each={props.companies} fallback={<LoadingComponent />}>
+            {(company) => <Empresa empresa={company}/>}
+        </For>
+    );
+}
+
 export function Sidebar(props: SidebarProps) {
-    const [providersElem, setProvidersElem] = createSignal<JSX.Element>(<></>);
+    const [companies, setCompanies] = createSignal<Company[]>([]);
     const [activeRoute, setActiveRoute] = createSignal<"rutas" | "destino">("rutas");
 
     createEffect(async() => {
@@ -202,14 +213,7 @@ export function Sidebar(props: SidebarProps) {
         const manager = await props.builder.getInstance();
 
         const companies = manager.getAll();
-
-        const providers = (
-            <For each={companies} fallback={<LoadingComponent />}>
-                {(company) => <Empresa empresa={company}/>}
-            </For>
-        );
-
-        setProvidersElem(providers);
+        setCompanies(companies);
     });
 
     return (
@@ -230,7 +234,7 @@ export function Sidebar(props: SidebarProps) {
                     <div className={css(styles.rutasContainer)}>
                         <Show when={activeRoute() === "rutas"}>
 
-                            {providersElem()}
+                            <SidebarElems companies={companies()} />
                             <div id="ruta_portal" className={css(styles.rutaPortal)}></div>
 
                         </Show>
