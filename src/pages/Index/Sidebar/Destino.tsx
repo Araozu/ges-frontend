@@ -1,8 +1,9 @@
 import { css, StyleSheet } from "aphrodite/no-important";
-import { createEffect, createSignal, For, untrack } from "solid-js";
+import { createEffect, createSignal, For, Show, untrack } from "solid-js";
 import { lastMapMarker } from "../../../values/State";
 import { ProviderManagerBuilder } from "../../../values/ProviderManagerBuilder";
 import { serverPath } from "../../../values/Constants";
+import { useToggle } from "./SidebarEmpresa";
 
 const styles = StyleSheet.create({
     header: {
@@ -202,6 +203,91 @@ async function searchConcessionv3(p1: [number, number], p2: [number, number], ra
     return await request.json();
 }
 
+
+function EmpresaBusqueda(props: {data: ServerResponse3}) {
+    const s = StyleSheet.create({
+        busqueda: {
+            display: "grid",
+            gridTemplateColumns: "4rem 5rem auto",
+            padding: "1rem 0",
+            borderBottom: "solid 1px var(--border-color)",
+        },
+        time: {
+            fontWeight: 500,
+            borderRight: "solid 1px var(--border-color)",
+            textAlign: "center",
+        },
+        icon2: {
+            color: "var(--main-color)",
+            fontSize: "3rem",
+            padding: 0,
+        },
+        micon: {
+            fontSize: "60px",
+            verticalAlign: "middle",
+            cursor: "pointer",
+        },
+    });
+
+    const managerPromise = new ProviderManagerBuilder().getInstance();
+
+    const onActive = async() => {
+        const manager = await managerPromise;
+        const company = manager.getConcessionById(props.data.id);
+        company?.show();
+    };
+
+    const onInactive = async() => {
+        const manager = await managerPromise;
+        const company = manager.getConcessionById(props.data.id);
+        company?.hide();
+    };
+
+    const {
+        toggleActive,
+        toggleStyle,
+        toggleIconName,
+    } = useToggle(onActive, onInactive);
+
+    return (
+        <div className={css(s.busqueda)}>
+            <div className={css(s.time)}>
+                <span style={{"font-size": "2rem"}}>{props.data.frequencyValue}</span>
+                <br/>
+                <span style={{"font-size": "1.25rem"}}>{props.data.frequencyUnit}</span>
+            </div>
+
+            <span class={`material-icons ${css(styles.icon1, s.icon2)}`}>
+                bus_alert
+            </span>
+
+            <div>
+                <span style={{"font-weight": 500}}>{props.data.name}</span>
+                <br/>
+                {props.data.company}
+                <br/>
+                <span
+                    className={`${css(s.micon)} material-icons`}
+                    onClick={toggleActive}
+                    style={toggleStyle()}
+                >
+                    {toggleIconName()}
+                </span>
+            </div>
+        </div>
+    );
+}
+
+function EmpresaVacio(props: {isFirst: boolean}) {
+    return (
+        <div>
+            <Show when={!props.isFirst}>
+                <p>No hay empresas cercanas.</p>
+            </Show>
+        </div>
+    );
+}
+
 export function Destino() {
     const [posOrigen, setPosOrigen] = createSignal<[number, number]>();
     const [posDestino, setPosDestino] = createSignal<[number, number]>();
@@ -210,6 +296,8 @@ export function Destino() {
     const [destinoListen, setDestinoListen] = createSignal(false);
 
     const [responseDataArr, setResponseDataArr] = createSignal<Array<ServerResponse3>>([]);
+
+    const [isFirst, setIsFirst] = createSignal(true);
 
     const textoOrigen = () => {
         const d = posOrigen();
@@ -279,6 +367,7 @@ export function Destino() {
         console.log(concessionata);
 
         setResponseDataArr(concessionata);
+        setIsFirst(false);
     };
 
     return (
@@ -332,12 +421,11 @@ export function Destino() {
                 {/*
                 <div className={css(styles.empresasLabel)}>Empresas</div>
                 */}
-                <For each={responseDataArr()}>
-                    {(empresa: ServerResponse3) => (
-                        <div>
-                            jaaaaaaaaaaaaaaaaaaaaaaaaaaa
-                        </div>
-                    )}
+                <For
+                    each={responseDataArr()}
+                    fallback={<EmpresaVacio isFirst={isFirst()} />}
+                >
+                    {(empresa: ServerResponse3) => <EmpresaBusqueda data={empresa} />}
                 </For>
             </div>
         </div>

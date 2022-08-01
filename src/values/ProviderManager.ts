@@ -82,6 +82,17 @@ export class ProviderManager {
         return null;
     }
 
+    public getConcessionById(concessionId: number): Concession | null {
+        for (const company of this.getAll()) {
+            const concession = company.getConcessiongById(concessionId);
+            if (concession !== null) {
+                return concession;
+            }
+        }
+
+        return null;
+    }
+
     public getCompanyByConcessionName(concessionName: string): Company | null {
         for (const company of this.getAll()) {
             const concession = company.getConcessiongByName(concessionName);

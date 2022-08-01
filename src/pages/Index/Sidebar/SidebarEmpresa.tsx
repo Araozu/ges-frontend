@@ -71,7 +71,7 @@ export type Empresa = {
     rutas: Array<Ruta>,
 }
 
-const useToggle = (onActive?: () => void, onInactive?: () => void, initial = false) => {
+export const useToggle = (onActive?: () => void, onInactive?: () => void, initial = false) => {
     const [active, setActive] = createSignal(initial);
     const toggleStyle = () => {
         if (active()) {
