@@ -408,6 +408,7 @@ export function Destino() {
                     <option value="50">50m</option>
                     <option value="100">100m</option>
                     <option value="500" selected>500m</option>
+                    <option value="1000">1km</option>
                 </select>
                 <br/>
                 <br/>
