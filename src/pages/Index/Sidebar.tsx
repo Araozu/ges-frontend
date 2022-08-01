@@ -3,7 +3,6 @@ import { createEffect, createSignal, For, JSX, Show } from "solid-js";
 import { Company_ } from "../../values/ProviderManager";
 import { Empresa } from "./Sidebar/SidebarEmpresa";
 import { ProviderManagerBuilder } from "../../values/ProviderManagerBuilder";
-import { Company } from "../../values/Company";
 import { Destino } from "./Sidebar/Destino";
 
 import logoUrl from "../../loO.jpg";
@@ -29,6 +28,14 @@ const styles = StyleSheet.create({
         borderBottom: "solid 1px var(--border-color)",
         backgroundColor: "#06384B",
         color: "white",
+        height: "2rem",
+        fontSize: "1.75rem",
+    },
+    titleBicon: {
+        fontSize: "2rem",
+        cursor: "pointer",
+        position: "absolute",
+        left: "0.5rem",
     },
     provider: {
         border: "solid 1px var(--border-color)",
@@ -83,7 +90,8 @@ const styles = StyleSheet.create({
     },
     rutasContainer: {
         position: "relative",
-        maxHeight: "85vh",
+        minHeight: "calc(100% - 3.7rem)",
+        maxHeight: "calc(100% - 3.7rem)",
         overflowY: "scroll",
     },
 });
@@ -100,6 +108,7 @@ const bar = StyleSheet.create({
         width: "2.6rem",
         height: "2.6rem",
         borderRadius: "1.3rem",
+        cursor: "pointer",
     },
 });
 
@@ -111,18 +120,12 @@ interface IconBarProps {
 }
 
 function IconBar(props: IconBarProps) {
-    const toggleIconName = () => (props.isSidebarCollapsed ? "keyboard_double_arrow_right" : "keyboard_double_arrow_left");
-
-    const buttonClickFn = () => {
-        props.toggleSidebar();
-    };
-
     const rutasStyle = () => (props.activeRoute === "rutas" ? {"background-color": "#06384B"} : {});
     const destinoStyle = () => (props.activeRoute === "destino" ? {"background-color": "#06384B"} : {});
 
     return (
         <div className={css(styles.bar)}>
-            <img className={css(bar.logo)} src={logoUrl} alt=""/>
+            <img className={css(bar.logo)} src={logoUrl} alt="" onClick={props.toggleSidebar}/>
             <br/>
             <br/>
             <div style={rutasStyle()}>
@@ -159,6 +162,29 @@ function IconBar(props: IconBarProps) {
     );
 }
 
+function LoadingComponent() {
+    const s = StyleSheet.create({
+        icon: {
+            transform: "",
+            color: "var(--main-color)",
+            animationName: "spin",
+            animationDuration: "2500ms",
+            animationIterationCount: "infinite",
+            animationTimingFunction: "linear",
+        },
+    });
+
+    return (
+        <div style={{"text-align": "center"}}>
+            <span
+                className={`${css(styles.bicon, s.icon)} material-icons`}
+            >
+                cached
+            </span>
+        </div>
+    );
+}
+
 type SidebarProps = {
     companies: Array<Company_>,
     builder: ProviderManagerBuilder,
@@ -168,26 +194,23 @@ type SidebarProps = {
 
 export function Sidebar(props: SidebarProps) {
     const [providersElem, setProvidersElem] = createSignal<JSX.Element>(<></>);
-    const [companies, setCompanies] = createSignal<Array<Company>>([]);
     const [activeRoute, setActiveRoute] = createSignal<"rutas" | "destino">("rutas");
 
     createEffect(async() => {
         const companiesData = props.companies;
+        console.log("Sidebar: companies updated", companiesData.length);
         const manager = await props.builder.getInstance();
-        setCompanies(manager.getAll());
-    });
 
-    (async() => {
-        const providerManager = await props.builder.getInstance();
+        const companies = manager.getAll();
 
         const providers = (
-            <For each={companies()}>
+            <For each={companies} fallback={<LoadingComponent />}>
                 {(company) => <Empresa empresa={company}/>}
             </For>
         );
 
         setProvidersElem(providers);
-    })();
+    });
 
     return (
         <div className={css(styles.container)}>
@@ -196,8 +219,8 @@ export function Sidebar(props: SidebarProps) {
                 <div style={{position: "relative"}}>
                     <h1 className={css(styles.title)} style={{position: "relative"}}>
                         <span
-                            className={`${css(styles.bicon)} material-icons`}
-                            style={{position: "absolute", left: 0, "font-size": "1rem !important"}}
+                            className={`${css(styles.bicon, styles.titleBicon)} material-icons`}
+                            onClick={props.toggleSidebarFn}
                         >
                             menu
                         </span>

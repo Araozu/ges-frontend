@@ -1,8 +1,8 @@
 import { Map } from "../components/Map";
-import { createSignal } from "solid-js";
+import { createEffect, createSignal } from "solid-js";
 import { Sidebar } from "./Index/Sidebar";
-import { StyleSheet, css } from "aphrodite/no-important";
-import { Company_} from "../values/ProviderManager";
+import { css, StyleSheet } from "aphrodite/no-important";
+import { Company_ } from "../values/ProviderManager";
 import { ProviderManagerBuilder } from "../values/ProviderManagerBuilder";
 
 const serverPath = "https://system-routes.herokuapp.com";
@@ -24,18 +24,7 @@ const styles = StyleSheet.create({
     },
 });
 
-const providerManagerBuilder = new ProviderManagerBuilder();
-export function Index() {
-    const [providers, setProviders] = createSignal<Company_[]>([]);
-
-
-    const [isSidebarCollapsed, setIsSidebarCollapsed] = createSignal(false);
-    const sidebarColumnSize = () => (isSidebarCollapsed() ? "3rem" : "24rem");
-
-    const toggleSidebar = () => {
-        setIsSidebarCollapsed((x) => !x);
-    };
-
+function loadData(setProviders: (c: Company_[]) => void) {
     fetch(`${serverPath}/company/`)
         .then((res) => res.json())
         .then(async(obj) => {
@@ -50,6 +39,25 @@ export function Index() {
         .catch((err) => {
             console.log("Error fetching.", err);
         });
+}
+
+const providerManagerBuilder = new ProviderManagerBuilder();
+export function Index() {
+    const [providers, setProviders] = createSignal<Company_[]>([]);
+
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = createSignal(false);
+    const sidebarColumnSize = () => (isSidebarCollapsed() ? "3rem" : "24rem");
+
+    const toggleSidebar = () => {
+        setIsSidebarCollapsed((x) => !x);
+    };
+
+    loadData(setProviders);
+
+    createEffect(() => {
+        const p = providers();
+        console.log("Providers updated", p.length);
+    });
 
     return (
         <div className={css(styles.container)} style={{"grid-template-columns": `${sidebarColumnSize()} auto`}}>
