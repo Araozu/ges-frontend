@@ -137,7 +137,7 @@ function ConcessionEl(props: { concession: Concession, mostrarInfo: () => void, 
                 </span>
 
                 <div className={css(styles.rutaTexto)}>
-                    {props.concession.name}
+                    {props.concession.company}
                 </div>
 
                 <div className={css(styles.rutaTexto)} style={{"font-size": "0.75rem"}}>

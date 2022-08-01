@@ -22,7 +22,7 @@ export class Company {
         this.id = param.id;
         this.name = param.name;
 
-        this.concessions = param.allConcession.map((c) => new Concession(c.id, c.name, map));
+        this.concessions = param.allConcession.map((c) => new Concession(c.id, c.name, c.company, map));
     }
 
     public getConcessiongById(concessionId: number): Concession | null {

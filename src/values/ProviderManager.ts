@@ -6,6 +6,7 @@ import { Company } from "./Company";
 export interface Concession_ {
     id: number,
     name: string,
+    company: string,
 }
 
 // /company

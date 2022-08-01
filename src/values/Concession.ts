@@ -16,8 +16,10 @@ export interface ConcessionAdditionalInfo {
 export class Concession {
     /** Id of the concession */
     public readonly id: number;
-    /** Name of the concession */
+    /** Name of the parent company */
     public readonly name: string;
+    /** Name of the concession */
+    public readonly company: string;
 
     /**
      * Color of the path, generated automatically.
@@ -57,9 +59,10 @@ export class Concession {
      */
     private additionalInfo: ConcessionAdditionalInfo | null = null;
 
-    constructor(id: number, name: string, map: L.Map) {
+    constructor(id: number, name: string, company: string, map: L.Map) {
         this.id = id;
         this.name = name;
+        this.company = company;
 
         this.map = map;
     }
