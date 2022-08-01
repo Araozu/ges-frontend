@@ -361,7 +361,9 @@ export function Destino() {
 
         if (origen === undefined || destino === undefined) return;
 
-        const concessionata = await searchConcessionv3(posOrigen()!, posDestino()!, 500);
+        const rango = (document.getElementById("rango") as HTMLSelectElement).value;
+
+        const concessionata = await searchConcessionv3(posOrigen()!, posDestino()!, parseInt(rango));
 
         console.log("Destino::buscarFn - ids encontrados");
         console.log(concessionata);
